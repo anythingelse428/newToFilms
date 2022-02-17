@@ -1,6 +1,6 @@
 <template>
   <router-link
-  @click="addHistory(header)"
+    @click="addHistory(kpid)"
     :to="{ name: 'Watch', params: { kpid: Number(kpid) } }"
   >
     <div
@@ -9,6 +9,7 @@
     >
       <div class="film__info">
         <div class="film__info__text">
+
           <b
             ><span>{{ ratingAgeLimits }}+</span></b
           >
@@ -18,6 +19,9 @@
           <p>
             <span>{{ text }}</span>
           </p>
+          <p>
+            <slot name="action"></slot>
+          </p>
         </div>
       </div>
     </div>
@@ -25,15 +29,18 @@
 </template>
 
 <script>
+import Api from "../api/index";
 export default {
   name: "SimpleCard",
   props: {
+
     header: String,
     text: String,
     bgURL: String,
     type: String,
     ratingAgeLimits: String,
     kpid: String,
+    withDeleteFunc: Boolean,
   },
   computed: {
     cardTypeClass() {
@@ -43,10 +50,9 @@ export default {
     },
   },
   methods: {
-addHistory(title){
-  this.$store.commit('ADD_HISTORY',title)
-  
-},
+    addHistory(kpid) {
+      Api.addUserHistory(kpid);
+    },
     go() {
       return (window.location.href = "/watch/" + this.kpid);
     },

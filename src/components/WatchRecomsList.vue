@@ -15,6 +15,7 @@
         v-for="items in infoArr"
       ></simple-card>
     </div>
+    
   </div>
   </div>
 </template>
@@ -40,14 +41,12 @@ export default {
     init() {
       Api.getRecomsByKpid(this.watchRecomsKpid).then(({ data }) => {
         this.infoArr=(data.items);
-        console.log(this.infoArr);
       });
       return this.infoArr;
     },
   },
   mounted() {
     this.init();
-    console.log(this.watchRecomsKpid + "sajdhkasj");
   },
 };
 </script>

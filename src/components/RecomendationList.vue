@@ -1,9 +1,8 @@
 <template>
-  <div class="recomendation" id="recoms">
+  <div class="recomendation" id="recoms" v-if="recomendation">
     <div
       class="recomendation__cards"
       v-if="recomendation.length > 0"
-      :style="`grid-template-rows: repeat(${recomendation.length}, 7%);`"
     >
       <simple-card
         :header="reki.nameRu"
@@ -40,13 +39,20 @@ export default {
   mounted() {
     Api.getRecomendationList().then(({ data }) => {
       this.recomendation = data.content;
-      console.log(this.recomendation);
     });
   },
 };
 </script>
 
 <style scoped>
+  .recomendation__cards {
+    display: grid;
+    grid-column-gap: 0.5em;
+    grid-row-gap: 0.5em;
+    width: 100%;
+    grid-template-rows: repeat(1fr, 7%);
+    grid-template-columns: repeat(3, 1fr);
+  }
 .recomendation__goUp{
   position: fixed;
   z-index: 100500;
@@ -62,12 +68,7 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 55%;
-  }
-  .recomendation__cards {
-    display: block;
-    width: 100%;
-    height: 100vh;
+    /* height: 55%; */
   }
   .recomendation {
     margin: 0 auto;
@@ -88,7 +89,7 @@ export default {
     grid-column-gap: 0.5em;
     grid-row-gap: 0.5em;
     width: 100%;
-    height: 60%;
+   
   }
   .recomendation__placeholder {
     font-size: 1.5rem;
@@ -103,13 +104,5 @@ export default {
     width: 80%;
   }
 }
-@media screen and (min-width: 768px) {
-  .recomendation__cards {
-    display: grid;
-    grid-column-gap: 0.5em;
-    grid-row-gap: 0.5em;
-    width: 100%;
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+
 </style>

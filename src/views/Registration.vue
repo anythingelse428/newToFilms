@@ -90,7 +90,7 @@ export default {
           this.$store.commit("LOGIN", data?.jwt);
           return this.$router.push("/profile");
         } else {
-          console.log(data.data);
+
           switch (data.data.error) {
             case "enter your real name":
               this.valid.message = "Введите свое настоящее имя";

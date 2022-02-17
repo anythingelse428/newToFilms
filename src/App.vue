@@ -53,17 +53,17 @@
         </div>
       </div>
     </nav>
-    <div class="searchResult">
-      <ul v-if="inputSearch">
+    <div class="searchResult" v-if="inputSearch">
+      <ul class="searchResult__searchedBlock">
         <li v-if="(searchData.length == 0) & (inputSearch.length > 3)">
           ничего нет(
         </li>
         <div v-for="res in searchData" :key="res.kinopoiskId">
           <router-link
             :to="{ name: 'Watch', params: { kpid: Number(res.kinopoiskId) } }"
-            @click="inputSearch = ''"
+            @click="addHistory(res.kinopoiskId), (inputSearch = '')"
           >
-            <li class="SearchedFilm" v-if="res.nameRu">
+            <li class="searchResult__list" v-if="res.nameRu">
               <img
                 :src="res.posterUrl"
                 alt=""
@@ -77,30 +77,24 @@
         </div>
       </ul>
     </div>
-    <router-view />
+    <main>
+      <router-view />
+    </main>
     <footer>
       <p>
-        created with <i class="bi bi-suit-heart-fill text-danger"> </i>
-        <i @click="footerLinkShow = !footerLinkShow" class="footerMe"> anythingelse428 </i>
+        created with <i class="bi bi-suit-heart-fill text-danger"></i>
+        <a
+          href="https://github.com/anythingelse428"
+          target="_blank"
+          class="footerMe"
+          ><i>anythingelse428</i>
+        </a>
       </p>
-      <transition
-        @before-enter="beforeEnter"
-        @enter="enter"
-        @leave="leave"
-        :css="false"
-      >
-        <div class="footerLinks" v-show="footerLinkShow">
-          <a href="https://github.com/anythingelse428"
-            ><i class="bi bi-github"></i
-          ></a>
-          <a href="https://t.me/bug0g0"><i class="bi bi-telegram"></i></a>
-        </div>
-      </transition>
     </footer>
   </div>
 </template>
 
-<style>  
+<style>
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css");
 @import url("https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css");
 #app {
@@ -109,27 +103,24 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
+
 footer {
-  display: inline-flex;
-  width: 100%;
-  padding: .51em;
+  padding: 0.51em;
   color: white !important;
   background: rgb(8, 8, 8);
-  position: static;
-  bottom: 0;
-  justify-content: center;
+  width: 100%;
 }
 footer a,
 footer a:visited {
   cursor: pointer;
   color: inherit;
-  margin-left: .5em;
+  margin-left: 0.5em;
 }
-.footerMe:hover{
+.footerMe:hover {
   text-decoration: underline;
   cursor: pointer;
 }
-footer a:hover{
+footer a:hover {
   color: rgb(250, 81, 75);
 }
 .navbar-toggler:focus {
@@ -167,12 +158,20 @@ body {
 .searchResult {
   z-index: 100500;
   width: 20%;
+  min-width: 400px;
   position: fixed;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
   right: 5em;
+  height: 70%;
+}
+.searchResult__searchedBlock {
+  overflow-y: scroll;
+}
+.searchResult__searchedBlock::-webkit-scrollbar {
+  display: none;
 }
 .nav-link > i {
   font-size: 1.5em;
@@ -186,18 +185,18 @@ body {
   margin: 0;
   padding: 0;
 }
-.SearchedFilm {
+.searchResult__list {
   padding: 1em;
 }
 .searchResult ul > div > a {
   text-decoration: none;
   color: aliceblue;
 }
-.SearchedFilm:hover,
-.SearchedFilm:focus-visible,
-.SearchedFilm:focus-within,
-.SearchedFilm span:focus-visible,
-.SearchedFilm > a:focus-visible {
+.searchResult__list:hover,
+.searchResult__list:focus-visible,
+.searchResult__list:focus-within,
+.searchResult__list span:focus-visible,
+.searchResult__list > a:focus-visible {
   border: none;
   background: rgb(17, 17, 17);
   outline: 0;
@@ -221,7 +220,6 @@ body {
 }
 </style>
 <script>
-import gsap from 'gsap'
 import Api from "./api";
 import _ from "lodash";
 export default {
@@ -230,7 +228,6 @@ export default {
       inputSearch: "",
       searchData: [],
       ddshow: false,
-      footerLinkShow: false,
     };
   },
   mounted() {
@@ -246,6 +243,13 @@ export default {
     },
   },
   methods: {
+    addHistory(kpid) {
+      if (this.IS_AUTH) {
+        Api.addUserHistory(kpid);
+        console.log("yes", kpid);
+        if (!kpid) alert("Что-то пошло не так с добавлением в историю");
+      }
+    },
     checkMiddleware() {
       const name = "Auth";
       if (this.$route.meta.requiresAuth) {
@@ -254,33 +258,6 @@ export default {
           this.$router.push({ name: name });
         }
       }
-    },
-    beforeEnter(el) {
-      gsap.set(el, {
-        opacity: .7,
-      });
-    },
-    enter(el, done) {
-      gsap.to(el, {
-        duration: 1,
-        opacity: 1,
-        x: 5,
-        ease: "elastic.inOut(2.5, 1)",
-        onComplete: done,
-      });
-    },
-    leave(el, done) {
-      gsap.to(el, {
-        duration: 0.7,
-        x: 40,
-        ease: "elastic.inOut(2.5, 1)",
-      });
-      gsap.to(el, {
-        duration: 0.2,
-        delay: 0.5,
-        opacity: 0,
-        onComplete: done,
-      });
     },
 
     actAuth(act = "") {
@@ -309,7 +286,6 @@ export default {
       Api.search(this.inputSearch)
         .then((response) => {
           this.searchData = response.data.content;
-          console.log(this.searchData);
         })
         .catch(() => {
           this.searchData = [];

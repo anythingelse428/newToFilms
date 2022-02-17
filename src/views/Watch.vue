@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="watch__secondary">
-      <film-data ></film-data>
+      <film-data></film-data>
     </div>
     <div class="watch__section">
       <watch-recoms-list></watch-recoms-list>
@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     getSrc() {
-      this.watchKpid=this.$route.params.kpid
+      this.watchKpid = this.$route.params.kpid;
       switch (this.player) {
         case "Bazon":
           this.src = "//v1632823834.bazon.site/kp/" + this.watchKpid;
@@ -53,12 +53,12 @@ export default {
   },
 
   mounted() {
-    this.getSrc()
+    this.getSrc();
     if (localStorage.player) this.player = localStorage.player; //save choosen player variable
   },
   watch: {
-    '$route.params.kpid'(){
-      this.watchKpid=this.$route.params.kpid;
+    "$route.params.kpid"() {
+      this.watchKpid = this.$route.params.kpid;
     },
     player(newPlayer) {
       localStorage.player = newPlayer;
@@ -68,7 +68,6 @@ export default {
 </script>
 
 <style scoped>
-
 button {
   border: 0;
   border-radius: 0.1em;
@@ -79,13 +78,14 @@ button {
   text-align: center;
   font-weight: 100;
 }
-iframe{
-  background-color:rgb(141, 141, 141) ;
+iframe {
+  background-color: rgb(141, 141, 141);
 }
 .watch {
   display: flow-root;
   width: 100%;
   background: #0a0a0a;
+  padding-bottom: 5em;
 }
 .watch__primary {
   display: block;
@@ -99,7 +99,8 @@ iframe{
   float: right;
 }
 .watch__section {
- width: 65%;
+  width: 65%;
+  float: left;
 }
 .watch__section h2 {
   color: aliceblue;
@@ -118,8 +119,7 @@ iframe{
     width: 100%;
   }
   .watch__section {
-  width: 100%;
-
+    width: 100%;
   }
 }
 </style>

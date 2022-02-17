@@ -45,7 +45,7 @@ export default {
             this.$router.push("/profile");
           }
           else{
-            console.log(data.data);
+
             if(data.data.error=='the account with the specified email address was not found') return this.valid.email = "warn"
             if(data.data.error=='invalid password') return this.valid.password = "warn"
 

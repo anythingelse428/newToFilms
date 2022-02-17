@@ -3,7 +3,8 @@
 /**
  * @todo ХУЙНЯ С РЕГИСТРАЦИЕЙ - success
  */
-function UserCreate (string $name, string $surname, string $gender, string $birthday, string $email, string $password) {
+function UserCreate(string $name, string $surname, string $gender, string $birthday, string $email, string $password)
+{
   // check name
   if (!UserValidatorName($name)) return UserHandler(1001);
 
@@ -53,7 +54,8 @@ function UserCreate (string $name, string $surname, string $gender, string $birt
 }
 
 // User Login
-function UserLoginAuthorizeIt (array $user, bool $eval=false) {
+function UserLoginAuthorizeIt(array $user, bool $eval = false)
+{
   // everything is fine, we authorize it
   $userUnique = $user['uid'];
   $userAccess = $user['access'];
@@ -70,7 +72,7 @@ function UserLoginAuthorizeIt (array $user, bool $eval=false) {
     'access' => $user['access'],
     'blocking' => $user['blocking']
   ];
-  
+
   $jwt = UserJwtEncode($userUnique, $userAvailableProperties, $userAccess);
   $loginData['jwt'] = $jwt;
   $loginData['uid'] = $user['uid'];
@@ -83,7 +85,8 @@ function UserLoginAuthorizeIt (array $user, bool $eval=false) {
   return $loginData;
 }
 
-function UserLogin (string $loginInput, string $password, bool $eval=false) {
+function UserLogin(string $loginInput, string $password, bool $eval = false)
+{
   // looking for an account
   $user = UserGetByLoginInput($loginInput);
   // checking if it exists
@@ -94,7 +97,7 @@ function UserLogin (string $loginInput, string $password, bool $eval=false) {
   if ($passwordSalt !== $user['password']) return UserHandler(1010);
 
   $loginData = UserLoginAuthorizeIt($user, $eval);
-  
+
   return $loginData;
 }
 
@@ -102,7 +105,8 @@ function UserLogin (string $loginInput, string $password, bool $eval=false) {
 /**
  * @method UserGetByUid
  */
-function UserRefreshJwt (string $jwt, string $client_id='') {
+function UserRefreshJwt(string $jwt, string $client_id = '')
+{
   // fetch user
   if (!UserJwtIsValid($jwt)) return UserHandler(1011);
   $user = UserJwtDecode($jwt)['data'];
@@ -126,7 +130,8 @@ function UserRefreshJwt (string $jwt, string $client_id='') {
   return $loginData;
 }
 
-function UserCheckPasswordByJwt (string $jwt) {
+function UserCheckPasswordByJwt(string $jwt)
+{
   if (!UserJwtIsValid($jwt)) return UserHandler(1011);
   $user = UserJwtDecode($jwt)['data'];
   $user_db = UserGetByUid($user['uid']);
@@ -137,7 +142,8 @@ function UserCheckPasswordByJwt (string $jwt) {
   return true;
 }
 
-function UserGetByUid (int $uid) {
+function UserGetByUid(int $uid)
+{
   $query = "SELECT * FROM User WHERE uid = :uid and blocking != :blocking";
   $var = [
     ':uid' => $uid,
@@ -148,7 +154,8 @@ function UserGetByUid (int $uid) {
   return $user;
 }
 
-function UserGetByEmail (string $email) {
+function UserGetByEmail(string $email)
+{
   $query = "SELECT * FROM User WHERE email = :email and blocking != :blocking";
   $var = [
     ':email' => $email,
@@ -159,7 +166,8 @@ function UserGetByEmail (string $email) {
   return $user;
 }
 
-function UserGetByDomain (string $domain) {
+function UserGetByDomain(string $domain)
+{
   $query = "SELECT * FROM User WHERE domain = :domain and blocking != :blocking";
   $var = [
     ':domain' => $domain,
@@ -170,7 +178,8 @@ function UserGetByDomain (string $domain) {
   return $user;
 }
 
-function UserGetByLoginInput (string $input) {
+function UserGetByLoginInput(string $input)
+{
   $query = "SELECT * FROM User WHERE email = :input or domain = :input or phone = :input and blocking != :blocking";
   $var = [
     ':input' => $input,
@@ -181,7 +190,8 @@ function UserGetByLoginInput (string $input) {
   return $user;
 }
 
-function UserGetPublicByUid (int $uid = 0, string $domain = '') {
+function UserGetPublicByUid(int $uid = 0, string $domain = '')
+{
   if ($uid !== 0) {
     $query = "SELECT uid, domain, name, surname, dateRegistration, dateVisit, platformVisit, gender, avatar, blocking, status FROM User WHERE uid = :uid";
     $var = [
@@ -206,27 +216,31 @@ function UserGetPublicByUid (int $uid = 0, string $domain = '') {
  * @method UserIsExistByUid
  * @return True|False
  */
-function UserIsExistByUid (int $uid) {
+function UserIsExistByUid(int $uid)
+{
   $user = UserGetByUid($uid);
 
   if ($user['uid']) return true;
   else return false;
 }
 
-function UserIsExistByEmail(string $email) {
+function UserIsExistByEmail(string $email)
+{
   $user = UserGetByEmail($email);
 
   if ($user['email']) return true;
   else return false;
 }
 
-function UserSessionsShow (string $jwt) {
+function UserSessionsShow(string $jwt)
+{
   $user = UserJwtDecode($jwt)['data'];
   $sessions = DeviceGetAllByUid($user['uid']);
   return $sessions;
 }
 
-function UserSessionsLogout(string $jwt, string $client_id, string $specified_client_id = '') {
+function UserSessionsLogout(string $jwt, string $client_id, string $specified_client_id = '')
+{
   $user = UserJwtDecode($jwt)['data'];
 
   if ($specified_client_id !== '') {
@@ -245,7 +259,8 @@ function UserSessionsLogout(string $jwt, string $client_id, string $specified_cl
 }
 
 // User Update
-function UserEditSave (string $jwt, array $ctx=['name'=> '', 'surname' => '', 'birthday' => '', 'gender' => '']) {
+function UserEditSave(string $jwt, array $ctx = ['name' => '', 'surname' => '', 'birthday' => '', 'gender' => ''])
+{
   $user = UserJwtDecode($jwt);
   if (!$user['data']['uid'] || !UserCheckPasswordByJwt($jwt)) return UserHandler(1011);
 
@@ -280,18 +295,19 @@ function UserEditSave (string $jwt, array $ctx=['name'=> '', 'surname' => '', 'b
   }
 
   $query_update = "UPDATE User SET"
-    .($payload[':name'] ? ' name = :name' : '')
-    .($payload[':surname'] ? ($payload[':name'] ? ',' : '').' surname = :surname' : '')
-    .($payload[':birthday'] ? ($payload[':surname'] ? ',' : '').' birthday = :birthday' : '')
-    .($payload[':gender'] ? ($payload[':birthday'] ? ',' : '').' gender = :gender' : '')
-    ." WHERE uid = :uid";
-  
+    . ($payload[':name'] ? ' name = :name' : '')
+    . ($payload[':surname'] ? ($payload[':name'] ? ',' : '') . ' surname = :surname' : '')
+    . ($payload[':birthday'] ? ($payload[':surname'] ? ',' : '') . ' birthday = :birthday' : '')
+    . ($payload[':gender'] ? ($payload[':birthday'] ? ',' : '') . ' gender = :gender' : '')
+    . " WHERE uid = :uid";
+
   dbAddOne($query_update, $payload);
 
   return UserRefreshJwt($jwt);
 }
 
-function UserUpdateStatus (int $uid, string $status = '') {
+function UserUpdateStatus(int $uid, string $status = '')
+{
   $query = "UPDATE User SET status = :status WHERE uid = :uid";
   $var = [
     ':uid' => $uid,
@@ -300,7 +316,8 @@ function UserUpdateStatus (int $uid, string $status = '') {
   dbAddOne($query, $var);
 }
 
-function UserUidSetOnline (int $uid, string $platform) {
+function UserUidSetOnline(int $uid, string $platform)
+{
   $query = "UPDATE User SET dateVisit = :time, platformVisit = :platformVisit WHERE uid = :uid";
   $var = [
     ':uid' => $uid,
@@ -313,7 +330,8 @@ function UserUidSetOnline (int $uid, string $platform) {
 // User Delete
 
 // User Handler []
-function UserHandler ($responce_code, $responce=[]) {
+function UserHandler($responce_code, $responce = [])
+{
   switch ($responce_code) {
     default:
       return 1000;
@@ -365,63 +383,72 @@ function UserHandler ($responce_code, $responce=[]) {
 }
 
 // User Validator [True||False]
-function UserValidatorName (string $name) {
+function UserValidatorName(string $name)
+{
   $regexp_name = '/^([А-Я]{1}[а-яё]{1,23}|[A-Z]{1}[a-z]{1,23})$/u';
 
   if (preg_match($regexp_name, $name)) return true;
   else return false;
 }
 
-function UserValidatorSurname (string $surname) {
+function UserValidatorSurname(string $surname)
+{
   $regexp_surname = '/^([А-Я]{1}[а-яё]{1,23}|[A-Z]{1}[a-z]{1,23})$/u';
   if (preg_match($regexp_surname, $surname)) return true;
   else return false;
 }
 
-function UserValidatorBirthday (string $birthday) {
+function UserValidatorBirthday(string $birthday)
+{
   $regexp_birthday = '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/';
   if (preg_match($regexp_birthday, $birthday)) return true;
   else return false;
 }
 
-function UserValidatorAgeOver13 (string $birthday) {
+function UserValidatorAgeOver13(string $birthday)
+{
   $birthday_year = (int) explode('-', $birthday)[0];
   if (date('Y') - $birthday_year > 13) return true;
   else return false;
 }
 
-function UserValidatorPassword (string $password) {
+function UserValidatorPassword(string $password)
+{
   if (mb_strlen($password) >= 8) return true;
   else return false;
 }
 
-function UserValidatorGender (string $gender) {
+function UserValidatorGender(string $gender)
+{
   $genders_allow = ['male', 'female', 'Хеликоптер Хеликоптер...'];
   if (in_array($gender, $genders_allow)) return $gender;
   else return $genders_allow[0];
 }
 
-function UserValidatorEmail (string $email) {
+function UserValidatorEmail(string $email)
+{
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
 
   return true;
 }
 
 // User Generators
-function UserGeneratorPassword (string $password) {
-  return md5($password).md5(md5($password)).md5(md5($password).md5(md5($password)));
+function UserGeneratorPassword(string $password)
+{
+  return md5($password) . md5(md5($password)) . md5(md5($password) . md5(md5($password)));
 }
 
 // JWT
 // UserJwtEncode ($unique, $jwt)
-function UserJwtEncode(int $unique=0, array $user, string $access='default') {
+function UserJwtEncode(int $unique = 0, array $user, string $access = 'default')
+{
   $server_token = md5('lFg486982lFg');
-  $user_token = md5($unique.'_key');
+  $user_token = md5($unique . '_key');
 
   $header = [
-      'alg' => 'sha256',
-      'typ' => 'JWT',
-      'unique' => $unique
+    'alg' => 'sha256',
+    'typ' => 'JWT',
+    'unique' => $unique
   ];
 
   $data = $user;
@@ -429,33 +456,70 @@ function UserJwtEncode(int $unique=0, array $user, string $access='default') {
 
   $str1 = base64_encode(json_encode($header));
   $str2 = base64_encode(json_encode($data));
-  $str3 = hash_hmac('sha256', md5($unique.json_encode($data).$user_token), $server_token);
+  $str3 = hash_hmac('sha256', md5($unique . json_encode($data) . $user_token), $server_token);
 
-  return $str1.'.'.$str2.'.'.$str3;
+  return $str1 . '.' . $str2 . '.' . $str3;
 }
 
 // UserJwtDecode ($jwt) : return user [$header, $data, $signature, $hash_hmac]
-function UserJwtDecode(string $jwt='0.0.0') {
+function UserJwtDecode(string $jwt = '0.0.0')
+{
   $server_token = md5('lFg486982lFg');
-  
+
   $jwt = explode('.', $jwt);
   $header = json_decode(base64_decode($jwt[0]), true);
   $data = json_decode(base64_decode($jwt[1]), true);
   $signature = $jwt[2];
 
   $unique = $header['unique'];
-  $user_token = md5($header['unique'].'_key');
-  $hash_hmac = hash_hmac('sha256', md5($unique.json_encode($data).$user_token), $server_token);
+  $user_token = md5($header['unique'] . '_key');
+  $hash_hmac = hash_hmac('sha256', md5($unique . json_encode($data) . $user_token), $server_token);
 
   return ['header' => $header, 'data' => $data, 'signature' => $signature, 'hash_hmac' => $hash_hmac];
 }
 
 // UserJwtIsValid ($jwt)
-function UserJwtIsValid(string $jwt) {
+function UserJwtIsValid(string $jwt)
+{
   $jwt_content = UserJwtDecode($jwt);
   // time
-      // check todo
+  // check todo
   // signature
   if ($jwt_content['signature'] == $jwt_content['hash_hmac']) return true;
   else return false;
+}
+function UserAddHistory(int $kpid, string $jwt)
+{
+  $user = UserJwtDecode($jwt)['data'];
+  $query = "INSERT INTO `UserHistory`(`id`, `uid`, `kpid`, `time`) VALUES (NULL, :uid, :kpid, :time)";
+  $var = [
+    ':uid' => $user['uid'],
+    ':kpid' => $kpid,
+    ':time' => time()
+  ];
+  dbAddOne($query, $var);
+  return ['status' => 'ok'];
+}
+function UserGetHistory(string $jwt)
+{
+  $user = UserJwtDecode($jwt)['data'];
+  $var = [
+    ':uid' => $user['uid'],
+    ':isDeleted' => 0
+  ];
+  $query = "SELECT * FROM `UserHistory` WHERE uid = :uid AND isDeleted = :isDeleted";
+  $history = dbGetAll($query, $var);
+  return $history;
+}
+function deleteHistoryItem(int $kpid, string $jwt)
+{
+  $user = UserJwtDecode($jwt)['data'];
+  $var = [
+    ':uid' => $user['uid'],
+    ':kpid' => $kpid,
+    ':isDeleted' => 1
+  ];
+  $query = "UPDATE `UserHistory` SET isDeleted = :isDeleted  WHERE  uid = :uid AND kpid = :kpid ";
+  dbAddOne($query, $var);
+  return ['status' => 'ok'];
 }

@@ -138,6 +138,64 @@ $methods = [
       ]
     ]
   ],
+  'user.addHistory' => [
+    'in_active' => true,
+    'beforeMethods' => ['User.online'],
+    'objects' => ['User', 'Device'],
+    'title' => 'User history info',
+    'detail' => 'User default info',
+    'link' => '/user.addHistory',
+    'props' => [
+      'jwt' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'client_id' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'kpid' => [
+        'required' => true,
+        'type' => 'Int'
+      ]
+    ]
+  ],
+  'user.deleteHistoryItem' => [
+    'in_active' => true,
+    'beforeMethods' => ['User.online'],
+    'objects' => ['User', 'Device'],
+    'title' => 'User history info',
+    'detail' => 'User default info',
+    'link' => '/user.getHistory',
+    'props' => [
+      'jwt' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'client_id' => [
+        'required' => true,
+        'type' => 'String'
+      ]
+    ]
+  ],
+  'user.getHistory' => [
+    'in_active' => true,
+    'beforeMethods' => ['User.online'],
+    'objects' => ['User', 'Device'],
+    'title' => 'User history info',
+    'detail' => 'User default info',
+    'link' => '/user.getHistory',
+    'props' => [
+      'jwt' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'client_id' => [
+        'required' => true,
+        'type' => 'String'
+      ]
+    ]
+  ],
   'user.getPrivateInfo' => [
     'in_active' => true,
     'beforeMethods' => ['User.online'],

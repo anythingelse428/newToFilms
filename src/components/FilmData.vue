@@ -1,13 +1,14 @@
 <template>
   <div class="filmData">
     <div class="filmData__main">
-      <div class="main__title"  @click="addHistory()">
+      <div class="main__title">
         <h1>{{ infoArr.filmType }} {{ infoArr.filmName }} смотреть онлайн</h1>
       </div>
     </div>
     <div class="filmData__description">
       <div class="description__about">
-        <h2>О {{ infoArr.filmType }}е</h2>
+        <h2 v-if="infoArr.filmType=='Фильм'||infoArr.filmType=='Мини-сериал'||infoArr.filmType=='Сериал'">О {{ infoArr.filmType }}е</h2>
+        <h2 v-if="infoArr.filmType=='Видео'||infoArr.filmType=='Шоу'">О {{ infoArr.filmType }}</h2>
         <div
           class="description__about__text"
           v-if="infoArr.filmDescription && infoArr.filmDescriptionFull"
@@ -50,17 +51,20 @@
     </div>
     <div class="filmData__actors">
       <h2>Актеры</h2>
-      <div class="actors">
+      <div class="actors" v-if="infoArr.filmActors">
         <div
           class="actors__actor"
           v-for="actor in infoArr.filmActors"
-          :key="actor.id"
+          :key="actor.staffId"
         >
           <div class="actor__ico filmData_elemBorder" id="actor">
             <i class="bi bi-person-fill"></i>
           </div>
           <label for="actor">{{ actor.nameRu }}</label>
         </div>
+      </div>
+      <div class="" v-else>
+        У нас пока нет данных, но мы скоро все добавим
       </div>
     </div>
   </div>
@@ -92,9 +96,6 @@ export default {
   },
 
   methods: {
-        addHistory() {
-      console.log(this.$store.state.user.history);
-    },
     init() {
       //geting info about film
       this.infoKpid = this.$route.params.kpid;
@@ -130,8 +131,6 @@ export default {
             this.infoArr.filmType = "Шоу";
             break;
         }
-
-        console.log(parseInt(this.infoArr.filmRating, 10));
         switch (parseInt(this.infoArr.filmRating, 10)) {
           case 7:
           case 8:
@@ -154,8 +153,9 @@ export default {
       });
       Api.getActors(this.infoKpid).then(({ data }) => {
         this.infoArr.filmActors = [];
-        for (let i = 0; i < 17; i++) {
-          this.infoArr.filmActors.push(data.staff.ACTOR[i]);
+        let i = data.staff.ACTOR.length<10?data.staff.ACTOR.length:10
+        for (let k = 0; k < i; k++) {
+          this.infoArr.filmActors.push(data.staff.ACTOR[k]);
         }
       });
       return this.infoArr;
