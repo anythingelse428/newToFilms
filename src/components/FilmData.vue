@@ -1,71 +1,101 @@
 <template>
   <div class="filmData">
-    <div class="filmData__main">
-      <div class="main__title">
-        <h1>{{ infoArr.filmType }} {{ infoArr.filmName }} смотреть онлайн</h1>
+    <div class="main filmData__main">
+      <div class="title main__title">
+        <h2>
+          <span>{{ infoArr.filmType + " " }}</span>
+          <span>{{ infoArr.filmName }}</span> смотреть онлайн
+        </h2>
       </div>
-    </div>
-    <div class="filmData__description">
-      <div class="description__about">
-        <h2 v-if="infoArr.filmType=='Фильм'||infoArr.filmType=='Мини-сериал'||infoArr.filmType=='Сериал'">О {{ infoArr.filmType }}е</h2>
-        <h2 v-if="infoArr.filmType=='Видео'||infoArr.filmType=='Шоу'">О {{ infoArr.filmType }}</h2>
-        <div
-          class="description__about__text"
-          v-if="infoArr.filmDescription && infoArr.filmDescriptionFull"
-        >
-          <div class="filmData__about__text">
-            {{ infoArr.filmDescription }}
-            <span @click="showMore = !showMore" class="mt-5">
-              <b v-if="showMore == false"> Больше </b>
-              <b v-if="showMore == true"> Скрыть </b>
-            </span>
-          </div>
-          <div class="filmData__about__text" v-show="showMore">
-            {{ infoArr.filmDescriptionFull }}
-          </div>
-        </div>
-        <div class="filmData__about__text" v-else>
-          {{ infoArr.filmDescriptionFull }}{{ infoArr.filmDescription }}
-        </div>
+      <div class="description filmData__description">
+        <div class="about description__about">
+          <h2
+            class="about__type"
+            v-if="
+              infoArr.filmType == 'Фильм' ||
+              infoArr.filmType == 'Мини-сериал' ||
+              infoArr.filmType == 'Сериал'
+            "
+          >
+            О <span>{{ infoArr.filmType }}</span
+            >е
+          </h2>
+          <h2
+            class="about__type"
+            v-if="infoArr.filmType == 'Видео' || infoArr.filmType == 'Шоу'"
+          >
+            О <span>{{ infoArr.filmType }}</span>
+          </h2>
+          <div
+            class="about__text"
+            v-if="infoArr.filmDescription && infoArr.filmDescriptionFull"
+          >
+            <p class="about__text about__text_default">
+              {{ infoArr.filmDescription }}
+              <b
+                class="about__text_show"
+                v-if="showMore == false"
+                @click="showMore = !showMore"
+              >
+                Больше
+              </b>
+            </p>
 
-        <div class="main__subinfo">
-          <ul>
-            <span>{{ infoArr.filmCountry }}</span>
-            <li v-for="genre in infoArr.filmGenre" :key="genre.id">
-              {{ genre }}
-            </li>
-          </ul>
-          <p>
-            {{ infoArr.filmYear }} {{ infoArr.filmTime }} {{ infoArr.filmAge }}+
-          </p>
-          <div class="title__rating">
-            <b
-              id="mark"
-              class="filmData_elemBorder"
-              :style="`background:${infoArr.ratingColor}`"
-              ><span>{{ infoArr.filmRating[0] }}</span></b
-            >
+            <div class="about__text about__text_more" v-show="showMore">
+              {{ infoArr.filmDescriptionFull }}
+              <b
+                class="about__text_hide"
+                v-if="showMore == true"
+                @click="showMore = !showMore"
+              >
+                Скрыть
+              </b>
+            </div>
           </div>
+          <div class="about__text" v-else>
+            <p>
+              {{ infoArr.filmDescriptionFull }}{{ infoArr.filmDescription }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="subinfo main__subinfo">
+        <ul class="characteristics subinfo__characteristics">
+          <span>{{ infoArr.filmCountry }}</span>
+          <li
+            class="characteristics__characteristic"
+            v-for="genre in infoArr.filmGenre"
+            :key="genre.id"
+          >
+            {{ genre }}
+          </li>
+        </ul>
+        <p>
+          {{ infoArr.filmYear }} {{ infoArr.filmTime }} {{ infoArr.filmAge }}+
+        </p>
+        <div class="rating subinfo__rating">
+          <b
+            class="rating_border border"
+            :style="`background:${infoArr.ratingColor}`"
+            ><span>{{ infoArr.filmRating[0] }}</span></b
+          >
         </div>
       </div>
     </div>
     <div class="filmData__actors">
       <h2>Актеры</h2>
-      <div class="actors" v-if="infoArr.filmActors">
+      <div class="actors" v-if="infoArr.filmActors.length">
         <div
-          class="actors__actor"
+          class="actor actors__actor"
           v-for="actor in infoArr.filmActors"
           :key="actor.staffId"
         >
-          <div class="actor__ico filmData_elemBorder" id="actor">
-            <i class="bi bi-person-fill"></i>
-          </div>
-          <label for="actor">{{ actor.nameRu }}</label>
+          <span>
+            {{ actor.nameRu }}
+          </span>
         </div>
       </div>
-      <div class="" v-else>
-        У нас пока нет данных, но мы скоро все добавим
-      </div>
+      <div v-else>У нас пока нет данных, но мы скоро все добавим</div>
     </div>
   </div>
 </template>
@@ -153,9 +183,12 @@ export default {
       });
       Api.getActors(this.infoKpid).then(({ data }) => {
         this.infoArr.filmActors = [];
-        let i = data.staff.ACTOR.length<10?data.staff.ACTOR.length:10
-        for (let k = 0; k < i; k++) {
-          this.infoArr.filmActors.push(data.staff.ACTOR[k]);
+        if (data.staff.ACTOR) {
+          console.log(data.staff.ACTOR);
+          let i = data.staff.ACTOR.length < 10 ? data.staff.ACTOR.length : 10;
+          for (let k = 0; k < i; k++) {
+            this.infoArr.filmActors.push(data.staff.ACTOR[k]);
+          }
         }
       });
       return this.infoArr;
@@ -179,55 +212,38 @@ export default {
   color: white;
   width: 90%;
   height: calc(100%);
+  padding-left: 2.5em;
+  margin-top: 1.5em;
 }
-.filmData__main {
+
+.main {
   display: flex;
   margin: 0 auto;
   justify-content: flex-start;
   flex-direction: column;
 }
-.filmData__description {
+.main__title {
+  text-align: left;
+}
+.description {
   display: flex;
   width: 100%;
-  margin-top: 3em;
+  margin-top: 0.5em;
 }
-.description__about {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
-}
-.description__about p {
+.about {
   text-align: left;
-  margin-left: 2em;
-  margin-bottom: 2em;
 }
-.description__about__text {
-  text-align: left;
-  width: 75%;
-}
-.description__about__text span {
-  cursor: pointer;
-}
-
-.description__about h2 {
-  margin-left: 1em;
-  text-align: left;
-  margin-bottom: 0;
-}
-.filmData__about__text {
-  text-align: start;
-  margin-left: 2em;
+.about__text {
   margin-bottom: 1em;
 }
-.filmData_elemBorder {
-  border: 0.4em solid;
-  border-radius: 15%;
-  padding: 0.5em;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
+.about__text_show,
+.about__text_hide {
+  cursor: pointer;
 }
+/*
+
+
+*/
 .main__subinfo {
   margin: 0;
   display: flex;
@@ -236,67 +252,13 @@ export default {
   flex-direction: column;
   text-align: start;
 }
-.main__subinfo p {
-  margin-bottom: 0;
+.characteristics {
+  padding: 0 !important;
 }
-.main__title {
-  display: inline-flex;
-  align-items: center;
-}
-.main__title h1 {
-  text-align: left;
-  margin: 0 .6em;
-  margin-top: 1em;
-}
-.title__rating b {
-  border-color: #232c36ad;
-  color: white;
-}
-.title__rating {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 2em;
-  margin-top: 1em;
-}
-.actor__ico {
-  border-color: #0c0f13c4;
-  background: rgb(39, 39, 39);
-}
-.actor__ico i {
-  color: white;
-  font-size: 1.4em;
-}
-.filmData__actors {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0 auto;
-  flex-direction: column;
-  align-items: center;
-}
-.actors__actor {
-  display: flex;
-  align-items: center;
-  width: 15%;
-  flex-wrap: wrap;
-  margin: 0.5em;
-  justify-content: center;
-}
-.actors__actor p {
-  text-align: center;
-  min-width: fit-content;
-}
-.actors {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-}
-li {
+.characteristics__characteristic {
   display: inline;
 }
-li::before {
+.characteristics__characteristic::before {
   content: " ";
   width: 2px;
   height: 2px;
@@ -306,7 +268,7 @@ li::before {
   margin-right: 6px;
   margin-bottom: 3px;
 }
-li:first-child::before {
+.characteristics__characteristic:first-child::before {
   width: 2px;
   height: 2px;
   text-align: center;
@@ -315,27 +277,35 @@ li:first-child::before {
   margin-right: 6px;
   margin-bottom: 3px;
 }
+.rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.border {
+  padding: 0.7em;
+  border-radius: 0.2em;
+  border-color: transparent !important;
+}
+/*
+
+*/
+.actors__actor {
+  width: 100%;
+  margin: 0.5em;
+  text-align: start;
+}
+
 @media screen and (max-width: 770px) {
   .filmData {
-    width: 100%;
-  }
-  .filmData__description {
-    display: flex;
-    width: 85vw;
+    background: #0a0a0a;
+    color: white;
+    width: 90%;
+    padding-left: 1.5em;
   }
   .description__about {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    width: 85vw;
-  }
-  .actors__actor {
-    display: flex;
-    align-items: center;
-    width: 25%;
-    flex-wrap: wrap;
-    margin: 0.5em;
-    justify-content: center;
   }
 }
 </style>

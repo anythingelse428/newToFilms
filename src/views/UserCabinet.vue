@@ -29,6 +29,7 @@ export default {
 
 <style scoped>
 .userCabinet{
+  height: 90vh;
   margin-top: 5em;
 }
 </style>

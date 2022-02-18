@@ -15,10 +15,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-/* .main {
-  max-width: 100% ;
-  background: #f3f3ef;
-
-} */
-</style>

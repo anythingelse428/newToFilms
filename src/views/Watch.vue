@@ -1,8 +1,12 @@
 <template>
   <div class="watch">
     <div class="watch__primary">
-      <div class="watch__video-wrapper ratio ratio-16x9">
+      <div
+        class="watch__video-wrapper ratio ratio-16x9"
+        @click="addUserHistory(watchKpid)"
+      >
         <iframe
+          @click="addUserHistory(watchKpid)"
           :src="getSrc()"
           frameborder="0"
           allowfullscreen
@@ -18,16 +22,17 @@
       <film-data></film-data>
     </div>
     <div class="watch__section">
-      <watch-recoms-list></watch-recoms-list>
+      <recomendation-for-film></recomendation-for-film>
     </div>
   </div>
 </template>
 <script>
+import Api from "../api/";
 import FilmData from "../components/FilmData.vue";
-import WatchRecomsList from "../components/WatchRecomsList.vue";
+import RecomendationForFilm from "../components/RecomendationForFilm.vue";
 export default {
   name: "Watch",
-  components: { FilmData, WatchRecomsList },
+  components: { FilmData, RecomendationForFilm },
   data() {
     return {
       watchKpid: this.$route.params.kpid,
@@ -49,6 +54,9 @@ export default {
           break;
       }
       return this.src;
+    },
+    addHistory(kpid) {
+      Api.addUserHistory(kpid);
     },
   },
 

@@ -7,9 +7,8 @@
       :class="'film ratio ratio-16x9 ' + cardTypeClass"
       :style="`background-image: url(${bgURL})`"
     >
-      <div class="film__info">
-        <div class="film__info__text">
-
+      <div class="film__info info">
+        <div class="info__text">
           <b
             ><span>{{ ratingAgeLimits }}+</span></b
           >
@@ -40,7 +39,6 @@ export default {
     type: String,
     ratingAgeLimits: String,
     kpid: String,
-    withDeleteFunc: Boolean,
   },
   computed: {
     cardTypeClass() {
@@ -94,15 +92,12 @@ export default {
 .film__info:hover {
   opacity: 1;
 }
-.film__info__text {
+.info__text {
   position: relative;
   top: 25%;
   width: 90%;
   margin: 0 auto;
   font-size: 1.5rem;
-}
-.film:hover {
-  background-color: #fff;
 }
 @media screen and (max-width: 425px) {
   .film_default {

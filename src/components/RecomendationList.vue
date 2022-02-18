@@ -1,9 +1,6 @@
 <template>
-  <div class="recomendation" id="recoms" v-if="recomendation">
-    <div
-      class="recomendation__cards"
-      v-if="recomendation.length > 0"
-    >
+  <div class="recomendation" v-if="recomendation">
+    <div class="recomendation__cards" v-if="recomendation.length > 0">
       <simple-card
         :header="reki.nameRu"
         :text="reki.year"
@@ -17,9 +14,6 @@
       </simple-card>
     </div>
     <span class="recomendation__placeholder" v-else> нема рекав </span>
-    <div class="recomendation__goUp" v-if="recomendation.length > 3">
-        <a href="#recoms"><i class="bi bi-chevron-double-up"></i></a>
-    </div>
   </div>
 </template>
 
@@ -36,6 +30,7 @@ export default {
       recomendation: [],
     };
   },
+  methods: {},
   mounted() {
     Api.getRecomendationList().then(({ data }) => {
       this.recomendation = data.content;
@@ -45,30 +40,29 @@ export default {
 </script>
 
 <style scoped>
-  .recomendation__cards {
-    display: grid;
-    grid-column-gap: 0.5em;
-    grid-row-gap: 0.5em;
-    width: 100%;
-    grid-template-rows: repeat(1fr, 7%);
-    grid-template-columns: repeat(3, 1fr);
-  }
-.recomendation__goUp{
+.recomendation__cards {
+  display: grid;
+  grid-column-gap: 0.5em;
+  grid-row-gap: 0.5em;
+  width: 100%;
+  grid-template-rows: repeat(1fr, 7%);
+  grid-template-columns: repeat(3, 1fr);
+}
+.recomendation__goUp {
   position: fixed;
   z-index: 100500;
   bottom: 2em;
   right: 1em;
 }
-.recomendation__goUp i{
+.recomendation__goUp i {
   font-size: 1.5em;
-  color:rgb(0, 0, 0)
+  color: rgb(0, 0, 0);
 }
 @media screen and (max-width: 425px) {
   .recomendation__cards {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* height: 55%; */
   }
   .recomendation {
     margin: 0 auto;
@@ -89,7 +83,6 @@ export default {
     grid-column-gap: 0.5em;
     grid-row-gap: 0.5em;
     width: 100%;
-   
   }
   .recomendation__placeholder {
     font-size: 1.5rem;
@@ -104,5 +97,4 @@ export default {
     width: 80%;
   }
 }
-
 </style>
