@@ -10,7 +10,6 @@
           <li
             class="found__list"
             v-if="item.nameRu"
-            @click="addUserHistory(item.kinopoiskId)"
           >
             <img
               :src="item.posterUrl"
@@ -28,7 +27,6 @@
 </template>
 
 <script>
-import Api from "../api/";
 export default {
   props: {
     input: {
@@ -39,11 +37,6 @@ export default {
     array: {
       type: Array,
       required: true,
-    },
-  },
-  methods: {
-    addUserHistory(kpid) {
-      Api.addUserHistory(kpid);
     },
   },
 };

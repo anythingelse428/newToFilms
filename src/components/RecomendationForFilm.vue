@@ -95,6 +95,7 @@ export default {
   scroll-behavior: smooth;
   overflow-x: visible;
   overflow-y: auto;
+  min-width: 31em;
 }
 .recomendationForFilm__list::-webkit-scrollbar {
   width: 20px;

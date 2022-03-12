@@ -1,6 +1,5 @@
 <template>
   <router-link
-    @click="addHistory(kpid)"
     :to="{ name: 'Watch', params: { kpid: Number(kpid) } }"
   >
     <div
@@ -19,6 +18,9 @@
             <span>{{ text }}</span>
           </p>
           <p>
+            <slot name="time"></slot>
+          </p>
+          <p>
             <slot name="action"></slot>
           </p>
         </div>
@@ -28,11 +30,9 @@
 </template>
 
 <script>
-import Api from "../api/index";
 export default {
   name: "SimpleCard",
   props: {
-
     header: String,
     text: String,
     bgURL: String,
@@ -48,9 +48,6 @@ export default {
     },
   },
   methods: {
-    addHistory(kpid) {
-      Api.addUserHistory(kpid);
-    },
     go() {
       return (window.location.href = "/watch/" + this.kpid);
     },
@@ -75,7 +72,8 @@ export default {
   background-size: cover;
   background-position: center;
   position: relative;
-  width: 35em;
+  width: 100%;
+  min-width: 30em;
   margin: 0.2em;
 }
 .film__info {
@@ -92,13 +90,20 @@ export default {
 .film__info:hover {
   opacity: 1;
 }
-.info__text {
-  position: relative;
-  top: 25%;
-  width: 90%;
-  margin: 0 auto;
-  font-size: 1.5rem;
+.info::before {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
+.info__text {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 1rem;
+}
+
 @media screen and (max-width: 425px) {
   .film_default {
     width: 100%;

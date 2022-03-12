@@ -2,20 +2,51 @@
   <div class="watch">
     <div class="watch__primary">
       <div
-        class="watch__video-wrapper ratio ratio-16x9"
-        @click="addUserHistory(watchKpid)"
+        class="watch__videoWrapper ratio ratio-16x9"
       >
         <iframe
-          @click="addUserHistory(watchKpid)"
-          :src="getSrc()"
+          v-if="!hide"
+          :src="GET_SRC"
           frameborder="0"
           allowfullscreen
-          referrerpolicy="origin"
         ></iframe>
+        <div
+          v-else
+          :style="{ 'background-image': 'url(' + GET_SRC + ')' }"
+          class="watch__video-bad"
+        >
+          <h2>Сайт создан исключительно с целью ознакомления</h2>
+        </div>
       </div>
-      <div class="watch__choose-player">
-        <button @click="player = 'Bazon'">Плеер 1</button>
-        <button @click="player = 'Sveta'">Плеер 2</button>
+      <div class="watch__choosePlayer" v-if="!hide">
+        <a
+          href="#"
+          @click="player = 'Bazon'"
+          :class="
+            `choosePlayer__button ` +
+            [
+              !activeButtonClass
+                ? ' choosePlayer__button-active'
+                : 'choosePlayer__button-inactive',
+            ]
+          "
+        >
+          Плеер 1
+        </a>
+        <a
+          href="#"
+          @click="player = 'Sveta'"
+          :class="
+            `choosePlayer__button ` +
+            [
+              activeButtonClass
+                ? ' choosePlayer__button-active'
+                : 'choosePlayer__button-inactive',
+            ]
+          "
+        >
+          Плеер 2
+        </a>
       </div>
     </div>
     <div class="watch__secondary">
@@ -38,28 +69,54 @@ export default {
       watchKpid: this.$route.params.kpid,
       player: "Bazon",
       src: "",
+      hide: true,
+      //if activeButtonClass is false button for call Bazon player is active, for this reason it have .choosePlayer__button-active class by default
+      activeButtonClass: false,
     };
   },
   methods: {
     getSrc() {
       this.watchKpid = this.$route.params.kpid;
-      switch (this.player) {
-        case "Bazon":
-          this.src = "//v1632823834.bazon.site/kp/" + this.watchKpid;
-          break;
-        case "Sveta":
-          this.src = "//7043.svetacdn.in/LDSZJq4uCNvY?kp_id=" + this.watchKpid;
-          break;
-        default:
-          break;
+      if (
+        localStorage.getItem("jwt") == "LOGOUT" ||
+        localStorage.getItem("jwt") == null
+      ) {
+        Api.getTrailer(this.watchKpid).then(({ data }) => {
+          console.log(data);
+          this.src = data.posterUrl;
+        });
+        return this.src;
+      } else {
+        this.hide = false;
+        switch (this.player) {
+          case "Bazon":
+            this.src = "//v1632823834.bazon.site/kp/" + this.watchKpid;
+            this.activeButtonClass = false;
+            break;
+          case "Sveta":
+            this.src =
+              "//7043.svetacdn.in/LDSZJq4uCNvY?kp_id=" + this.watchKpid;
+            this.activeButtonClass = true;
+
+            break;
+          default:
+            break;
+        }
+        return this.src;
       }
-      return this.src;
     },
     addHistory(kpid) {
       Api.addUserHistory(kpid);
     },
   },
-
+  computed: {
+    GET_SRC() {
+      return this.getSrc();
+    },
+  },
+  created(){
+    this.addHistory(this.watchKpid)
+  },
   mounted() {
     this.getSrc();
     if (localStorage.player) this.player = localStorage.player; //save choosen player variable
@@ -76,16 +133,48 @@ export default {
 </script>
 
 <style scoped>
-button {
+.watch__choosePlayer {
+  margin-top: 0.2em;
+}
+.choosePlayer__button {
+  display: inline-block;
+  position: relative;
+  padding: 0.21em;
   border: 0;
   border-radius: 0.1em;
-  background: aliceblue;
-  color: #504e4e;
   font-family: system-ui;
+  font-weight: 100;
   width: 8em;
   text-align: center;
-  font-weight: 100;
+  text-decoration: none;
 }
+.choosePlayer__button-inactive {
+  background: #ff616d;
+  color: #5b0707;
+}
+.choosePlayer__button-active {
+  background: #66de93;
+  color: #015220;
+}
+.choosePlayer__button-active::after,
+.choosePlayer__button-inactive::after {
+  content: "_";
+  color: transparent;
+  position: absolute;
+  z-index: 0;
+  margin: 0.1em auto;
+  left: 0;
+  right: 0;
+  max-width: 1em;
+  transition: transform cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.41s;
+  font-weight: 900;
+}
+.choosePlayer__button-active:hover::after,
+.choosePlayer__button-inactive:hover::after {
+  color: inherit;
+  transform: scaleX(10);
+}
+
 iframe {
   background-color: rgb(141, 141, 141);
 }
@@ -94,6 +183,16 @@ iframe {
   width: 100%;
   background: #0a0a0a;
   padding-bottom: 5em;
+}
+.watch__video-bad {
+  background-size: cover !important;
+  background: no-repeat;
+  filter: grayscale(0.9);
+}
+.watch__video-bad h2 {
+  color: rgb(248, 248, 248);
+  background: rgb(24, 24, 24);
+  padding: 0.5em;
 }
 .watch__primary {
   display: block;

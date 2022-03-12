@@ -40,6 +40,11 @@ export default {
 </script>
 
 <style scoped>
+  .recomendation {
+    margin: 0 auto;
+    padding: 1em;
+    width: 90%;
+  }
 .recomendation__cards {
   display: grid;
   grid-column-gap: 0.5em;
@@ -58,21 +63,9 @@ export default {
   font-size: 1.5em;
   color: rgb(0, 0, 0);
 }
-@media screen and (max-width: 425px) {
-  .recomendation__cards {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
+
+@media screen and (min-width: 670px) and (max-width: 1020px) {
   .recomendation {
-    margin: 0 auto;
-    padding: 1em;
-  }
-}
-@media screen and (min-width: 425px) and (max-width: 768px) {
-  .recomendation {
-    display: flex;
-    justify-content: center;
     margin: 0 auto;
     padding: 1em;
     width: 90%;
@@ -90,11 +83,15 @@ export default {
     align-items: center;
   }
 }
-@media screen and (min-width: 425px) {
+@media screen  and (max-width: 670px) {
   .recomendation {
     margin: 0 auto;
     padding: 1em;
     width: 80%;
+  }
+  .recomendation__cards{
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

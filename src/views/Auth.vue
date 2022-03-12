@@ -74,6 +74,9 @@ export default {
 </script>
 
 <style scoped>
+.auth{
+  height: 90vh;
+}
 .auth__form {
   display: flex;
   flex-direction: column;

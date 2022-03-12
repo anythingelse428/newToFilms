@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">
+      <router-link to="/" class="navbar-brand" @click="ddshow = false">
         <span>ToFilms</span>
       </router-link>
       <button
@@ -16,25 +16,22 @@
         <i class="bi bi-list-nested"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <router-link to="/" class="nav-link" @click="ddshow = false">
-              <span> Главная </span>
-            </router-link>
-          </li>
-        </ul>
-        <div class="d-flex">
-          <input
-            class="form-control me-2"
-            type="search"
-            autocomplete="off"
-            placeholder="Что смотрим сегодня?"
-            aria-label="Search"
-            @input="debouncedSearching($event)"
-            v-model="inputSearch"
-            autofocus
-          />
-        </div>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+        <i class="bi bi-search p-2 me-2" @click="searchShow = !searchShow"></i>
+
+          <transition name="slide-fade">
+            <input
+              v-if="searchShow"
+              class="me-2"
+              type="search"
+              autocomplete="off"
+              placeholder="Что смотрим сегодня?"
+              aria-label="Search"
+              @input="debouncedSearching($event)"
+              v-model="inputSearch"
+            />
+          </transition>
+        
         <ul class="navbar-nav mb-2 mb-lg-0">
           <li class="nav-item">
             <span v-if="IS_AUTH" class="d-flex justify-content-end">
@@ -70,6 +67,7 @@ export default {
     return {
       inputSearch: "",
       ddshow: false,
+      searchShow: false,
       searchData: [],
     };
   },
@@ -159,8 +157,9 @@ export default {
 </script>
 
 <style scoped>
-.nav-link > i {
+i {
   font-size: 1.5em;
+  color: #87888c;
 }
 .navbar-toggler:focus {
   box-shadow: initial !important;
@@ -178,5 +177,29 @@ export default {
   text-align: start;
   list-style: none;
   transition: 0.2s ease-in-out;
+}
+input {
+  color: #e7e7e7;
+  border: 0;
+  border-bottom: 2px solid #bebfbf;
+  background: inherit;
+  padding: 0.5em;
+  border-radius: 0.2em;
+}
+input:focus {
+  background-color: #37373775 !important;
+  outline: 0;
+  box-shadow: 0 0.15rem rgb(201 214 201 / 23%);
+}
+.slide-fade-enter-active {
+  transition: all 0.1s ease-in;
+}
+.slide-fade-leave-active {
+  transition: all 0.15s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
 }
 </style>

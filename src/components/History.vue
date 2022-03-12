@@ -1,5 +1,5 @@
 <template>
-  <div class="history" v-if="userHistory">
+  <div class="history" v-if="filmData.length > 0">
     <h2 class="history__header">Вернуться к просмотру</h2>
     <div class="history__wrapper">
       <button
@@ -16,9 +16,13 @@
           :ratingAgeLimits="item.ratingAgeLimits"
           :text="item.year"
           class="history__card"
-          v-for="item in filmData"
+          v-for="(item, idx) in filmData"
           :key="item"
         >
+          <!-- юзаю индекс шобы пробегать по массиву со временем, проверял: он от 0 идет -->
+          <template #time>
+            <span>{{ userHistoryTime[idx] }}</span>
+          </template>
           <template #action>
             <i
               class="history__card_delete bi bi-trash"
@@ -43,8 +47,9 @@ export default {
   components: { SimpleCard },
   data() {
     return {
-      userHistory: [],
+      userHistoryTime: [],
       filmData: [],
+      tempData: [],
     };
   },
   methods: {
@@ -54,25 +59,71 @@ export default {
       if (vector == "left") box.scrollLeft -= width;
       if (vector == "right") box.scrollLeft += width;
     },
+    initHistory() {
+      Api.getUserHistory()
+        .then(({ data }) => {
+          this.tempData = data;
+        })
+        .finally(() => this.getHistory());
+    },
     getHistory() {
-      Api.getUserHistory().then((data) => {
-        this.userHistory = [];
-        this.filmData = [];
-        this.userHistory = data.data;
-        this.userHistory.forEach((el) => {
-          Api.getInfoKpid(el.kpid).then(({ data }) => this.filmData.push(data));
+      /*ПРОБЛЕМА
+      я хочу к истории добавить две вещи: 
+      1. убрать дубликаты просмотреного (чтобы не забивать пулл с историей юзеру)
+      2. сортировать по времени (от последнего к первому)
+      
+      дубли я убрал, по времени отсортировал, но если посидеть пообновлять,
+      порядок карточек иногда меняется,
+      скореее всего нужно иначе пихать данные по массивам или умудряться подсовывывать данные прям в объект
+
+     КАРОЧЕ: массивы с данными не синхронизируются, я хз как синхронизировать, спаси пыж
+      */
+      if (this.tempData.length > 0) {
+        //обнуляю все парметры истории
+        this.filmData = []; //этот хранит данные о фильме с карты (заголовок, год и т.д)
+        this.userHistoryTime = []; //этот хранит только даты
+        const flagList = new Set(); // для фильтра
+        let history;
+        console.log("tempData", this.tempData);
+        //deleting objects with the same KPIDs and sort by time
+        history = this.tempData
+          //сортирую по дате (тоже работает, судя по сортированному userHistoryTime)
+          .sort(function (a, b) {
+            if (a.time < b.time) return 1;
+            if (a.time > b.time) return -1;
+            return 0;
+          })
+          //чищу дубли (работает, в history дублей кпидов нет)
+          .filter(function (item) {
+            if (!flagList.has(item["kpid"])) {
+              flagList.add(item["kpid"]);
+              return true;
+            }
+          });
+        //getting data for each KPIDs from API
+        console.log("history", history);
+        history.forEach((el) => {
+          Api.getInfoKpid(el.kpid).then(({ data }) => this.filmData.push(data)); //получил данные с апишки  и пихаю в массив
+          //converting time from ********** to normal data
+          //конвертирую время и пихаю в массив
+          this.userHistoryTime.push(
+            new Date(el.time * 1000).toLocaleString("ru", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })
+          );
         });
-      });
+        console.log("filmdata", this.filmData);
+        console.log("userhistoryTime", this.userHistoryTime);
+      }
     },
     deleteHistoryItem(kpid) {
       Api.deleteHistoryItem(kpid);
-      this.getHistory();
+      this.initHistory();
     },
   },
   mounted() {
-    if (this.filmData.length < 1) {
-      this.getHistory();
-    }
+    this.initHistory();
   },
 };
 </script>
@@ -106,8 +157,9 @@ export default {
   flex-wrap: nowrap;
   scroll-behavior: smooth;
   overflow-x: visible;
-  overflow-y: auto;
+  overflow-y: hidden;
   margin: 0 auto;
+  min-width: 31em;
 }
 .history__list::-webkit-scrollbar {
   width: 20px;

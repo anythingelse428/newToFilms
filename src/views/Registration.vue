@@ -240,6 +240,9 @@ export default {
 option:disabled {
   color: -internal-light-dark(gray, rgb(170, 170, 170));
 }
+.registration {
+  height: 90vh;
+}
 @media screen and (min-width: 666px) {
   .registration__form {
     display: flex;

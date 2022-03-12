@@ -498,7 +498,7 @@ function UserAddHistory(int $kpid, string $jwt)
     ':time' => time()
   ];
   dbAddOne($query, $var);
-  return ['status' => 'ok'];
+  return [$var];
 }
 function UserGetHistory(string $jwt)
 {

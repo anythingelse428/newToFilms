@@ -2,7 +2,7 @@
   <div class="filmData">
     <div class="main filmData__main">
       <div class="title main__title">
-        <h2>
+        <h2 >
           <span>{{ infoArr.filmType + " " }}</span>
           <span>{{ infoArr.filmName }}</span> смотреть онлайн
         </h2>
@@ -73,7 +73,7 @@
         <p>
           {{ infoArr.filmYear }} {{ infoArr.filmTime }} {{ infoArr.filmAge }}+
         </p>
-        <div class="rating subinfo__rating">
+        <div class="rating subinfo__rating" v-if="infoArr.filmRating>0">
           <b
             class="rating_border border"
             :style="`background:${infoArr.ratingColor}`"
