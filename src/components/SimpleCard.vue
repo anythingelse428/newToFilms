@@ -127,7 +127,7 @@ export default {
     background-size: cover;
     background-position: center;
     position: relative;
-    width: 25em;
+    width: 15em;
   }
 }
 </style>

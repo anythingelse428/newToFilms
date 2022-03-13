@@ -79,10 +79,10 @@ export default {
   width: 80%;
   display: flex;
   margin: 0 auto;
+  overflow: auto;
 }
-.button {
+.recomendationForFilm__button {
   overflow: visible;
-  z-index: 5;
   border: none;
   font-size: 2em;
   background: inherit;

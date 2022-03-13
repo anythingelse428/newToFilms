@@ -1,60 +1,111 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-      <router-link to="/" class="navbar-brand" @click="ddshow = false">
-        <span>ToFilms</span>
-      </router-link>
-      <button
-        class="navbar-toggler"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        @click="inputSearch = ''"
-      >
-        <i class="bi bi-list-nested"></i>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-        <i class="bi bi-search p-2 me-2" @click="searchShow = !searchShow"></i>
-
+  <div class="navigation-component">
+    <nav class="navigation">
+      <div class="navigation__brand">
+        <router-link to="/" class="navigation__link" @click="ddshow = false">
+          <span>ToFilms</span>
+        </router-link>
+      </div>
+      <div class="tools navigation__tools" v-if="!mobile">
+        <div class="search tools__search">
+          <i
+            class="bi bi-search navigation__link"
+            @click="(searchShow = !searchShow), (inputSearch = '')"
+          ></i>
           <transition name="slide-fade">
             <input
-              v-if="searchShow"
-              class="me-2"
+              v-if="searchShow || ddshow"
+              class="search__input"
               type="search"
               autocomplete="off"
               placeholder="Что смотрим сегодня?"
               aria-label="Search"
               @input="debouncedSearching($event)"
+              @focus="searchShow || ddshow"
               v-model="inputSearch"
             />
           </transition>
-        
-        <ul class="navbar-nav mb-2 mb-lg-0">
-          <li class="nav-item">
-            <span v-if="IS_AUTH" class="d-flex justify-content-end">
-              <router-link to="/profile" class="nav-link"
-                ><i class="bi bi-person me-2"></i
-              ></router-link>
-              <router-link to="/" @click="actAuth('LOGOUT')" class="nav-link"
-                ><i class="bi bi-box-arrow-in-right me-2"></i
-              ></router-link>
-            </span>
-            <span class="nav-item" v-else @click="actAuth()"
-              ><router-link to="/auth" class="nav-link"> Войти </router-link>
-            </span>
-          </li>
-        </ul>
+        </div>
+        <div v-if="IS_AUTH" class="navigation__tools-auth">
+          <router-link to="/profile" class="navigation__link"
+            ><i class="bi bi-person"></i
+          ></router-link>
+          <router-link
+            to="/"
+            @click="actAuth('LOGOUT')"
+            class="navigation__link"
+            ><i class="bi bi-box-arrow-in-right"></i
+          ></router-link>
+        </div>
+        <span
+          class="navigation__tools-nonauth"
+          v-if="!IS_AUTH"
+          @click="actAuth()"
+          ><router-link to="/auth" class="navigation__link">
+            Войти
+          </router-link>
+        </span>
+        <search-result
+          :input="inputSearch"
+          :array="searchData"
+          @click="(ddshow = false), (inputSearch = '')"
+        ></search-result>
       </div>
-    </div>
-    <search-result
-      :input="inputSearch"
-      :array="searchData"
-      @click="(ddshow = false), (inputSearch = '')"
-    ></search-result>
-  </nav>
+      <button
+        v-if="mobile"
+        class="colapseToggle navigation__colapseToggle"
+        :class="{ 'colapseToggle-clicked': ddshow }"
+        @click="ddshow = !ddshow"
+      >
+        <i class="bi bi-menu-button-wide"></i>
+      </button>
+    </nav>
+    <transition name="fade">
+      <div class="mobileBar navigation__tools-mobile" v-if="ddshow && mobile">
+        <div class="mobileBar__tools">
+          <i class="bi bi-x-lg" @click="ddshow = !ddshow"></i>
+          <div v-if="IS_AUTH" class="navigation__tools-auth">
+            <router-link to="/profile" class="navigation__link"
+              ><i class="bi bi-person"></i
+            ></router-link>
+            <router-link
+              to="/"
+              @click="actAuth('LOGOUT')"
+              class="navigation__link"
+              ><i class="bi bi-box-arrow-in-right"></i
+            ></router-link>
+          </div>
+          <span
+            class="navigation__tools-nonauth"
+            v-if="!IS_AUTH"
+            @click="actAuth()"
+            ><router-link to="/auth" class="navigation__link">
+              Войти
+            </router-link>
+          </span>
+        </div>
+
+        <div class="mobileBar__searchGroup">
+          <input
+            v-if="searchShow || ddshow"
+            class="search__input"
+            type="search"
+            autocomplete="off"
+            placeholder="Что смотрим сегодня?"
+            aria-label="Search"
+            @input="debouncedSearching($event)"
+            @focus="searchShow || ddshow"
+            v-model="inputSearch"
+          />
+          <search-result
+            :input="inputSearch"
+            :array="searchData"
+            @click="(ddshow = false), (inputSearch = '')"
+          ></search-result>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -67,8 +118,10 @@ export default {
     return {
       inputSearch: "",
       ddshow: false,
+      mobile: false,
       searchShow: false,
       searchData: [],
+      windowSize: window.innerWidth,
     };
   },
   created() {
@@ -77,8 +130,20 @@ export default {
   mounted() {
     Api.init(this);
     this.initAuth();
+    this.checkWindowWidth();
+    window.addEventListener("resize", () => {
+      this.checkWindowWidth();
+    });
+  },
+  updated() {
+    this.checkWindowWidth();
   },
   methods: {
+    checkWindowWidth() {
+      this.windowSize = window.innerWidth;
+      if (this.windowSize > 1100) return (this.mobile = false);
+      else return (this.mobile = true);
+    },
     checkMiddleware() {
       const name = "Auth";
       if (this.$route.meta.requiresAuth) {
@@ -139,6 +204,7 @@ export default {
         const dropdownElementList = [].slice.call(
           document.querySelectorAll(".dropdown-toggle")
         );
+
         const dropdownList = dropdownElementList.map(function (
           dropdownToggleEl
         ) {
@@ -157,40 +223,93 @@ export default {
 </script>
 
 <style scoped>
-i {
-  font-size: 1.5em;
-  color: #87888c;
-}
-.navbar-toggler:focus {
-  box-shadow: initial !important;
-  border: none !important;
-}
-.navbarDropdown__menu {
-  white-space: nowrap;
-  padding: 1em;
-  border-radius: 0.25em;
-  background: rgba(24, 24, 24, 0.7098039215686275);
-  right: 5%;
-  position: absolute;
+.navigation {
   display: flex;
-  flex-direction: column;
-  text-align: start;
-  list-style: none;
-  transition: 0.2s ease-in-out;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(27, 27, 27);
+  font-size: 1.5em;
+  padding: 0.55em;
+  width: 100%;
+  position: sticky;
 }
-input {
-  color: #e7e7e7;
+.navigation__link {
+  color: #ebebeb;
+  text-decoration: none;
+  margin: 0em 1em;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.colapseToggle {
   border: 0;
-  border-bottom: 2px solid #bebfbf;
-  background: inherit;
-  padding: 0.5em;
+  background: transparent;
+  color: #ebebeb;
+}
+.colapseToggle i::before {
+  transition: all 0.51s;
+}
+.colapseToggle-clicked i::before {
+  font-size: 1.2em !important;
+}
+.search__input {
+  background: none;
+  font-size: 0.9em;
+  border: none;
+  color: #d6d6d6;
+  border-bottom: 2px solid;
   border-radius: 0.2em;
+  padding: 0.2em;
+  margin: 0 0.25em;
+  outline: none;
 }
-input:focus {
-  background-color: #37373775 !important;
-  outline: 0;
-  box-shadow: 0 0.15rem rgb(201 214 201 / 23%);
+@media screen and (min-width: 1100px) {
+  .navigation__link:hover {
+    color: #dadada;
+  }
+  .navigation__tools {
+    display: flex;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+  }
+  .tools__search {
+    color: white;
+  }
 }
+
+@media screen and (max-width: 1100px) {
+  .navigation__tools-mobile {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    overflow: overlay;
+    background: #2d2d2df5;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+  .mobileBar__tools {
+    color: aliceblue;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    font-size: 1.5em;
+    margin-bottom: 0.9em;
+  }
+  .navigation__link:first-child {
+    margin-left: 0;
+  }
+  .navigation__link {
+    color: #ebebeb;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+}
+.search__input::placeholder,
 .slide-fade-enter-active {
   transition: all 0.1s ease-in;
 }
@@ -200,6 +319,15 @@ input:focus {
 .slide-fade-enter,
 .slide-fade-leave-to {
   transform: translateX(10px);
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

@@ -7,10 +7,7 @@
         <router-link
           :to="{ name: 'Watch', params: { kpid: Number(item.kinopoiskId) } }"
         >
-          <li
-            class="found__list"
-            v-if="item.nameRu"
-          >
+          <li class="found__list" v-if="item.nameRu">
             <img
               :src="item.posterUrl"
               alt=""
@@ -45,14 +42,14 @@ export default {
 <style scoped>
 .searchResult {
   width: 20%;
-  min-width: 400px;
+  min-width: 14em;
   position: fixed;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   right: 0em;
   height: 70%;
-  top: 5em;
+  top: 3em;
 }
 .searchResult__found::-webkit-scrollbar {
   display: none;
@@ -83,7 +80,7 @@ export default {
   background: rgb(17, 17, 17);
   outline: 0;
 }
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1100px) {
   .searchResult {
     width: 100%;
     position: fixed;
@@ -92,7 +89,9 @@ export default {
     flex-direction: column;
     align-items: center;
     right: 0em;
-    top: 11em;
+    top: 7em;
+    height: 100%;
+    min-width: 100%;
   }
 }
 </style>

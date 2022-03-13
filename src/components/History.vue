@@ -143,6 +143,7 @@ export default {
   width: 80%;
   display: flex;
   margin: 0 auto;
+  overflow: auto;
 }
 .button {
   overflow: visible;
@@ -159,7 +160,6 @@ export default {
   overflow-x: visible;
   overflow-y: hidden;
   margin: 0 auto;
-  min-width: 31em;
 }
 .history__list::-webkit-scrollbar {
   width: 20px;
