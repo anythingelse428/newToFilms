@@ -134,6 +134,7 @@ export default {
   flex-direction: column;
   width: 90%;
   margin: 0 auto;
+  padding-top: 5em;
 }
 .history__header {
   width: 100%;

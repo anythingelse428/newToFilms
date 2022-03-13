@@ -42,13 +42,13 @@ export default {
 <style scoped>
 .searchResult {
   width: 20%;
+  height: 60%;
   min-width: 14em;
   position: fixed;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  right: 0em;
-  height: 70%;
+  right: 3em;
   top: 3em;
 }
 .searchResult__found::-webkit-scrollbar {

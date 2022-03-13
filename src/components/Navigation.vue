@@ -223,6 +223,12 @@ export default {
 </script>
 
 <style scoped>
+.navigation-component {
+  position: fixed;
+  margin-bottom: 3em;
+  width: 100%;
+  z-index: 1;
+}
 .navigation {
   display: flex;
   align-items: center;
