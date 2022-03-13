@@ -225,6 +225,7 @@ export default {
 <style scoped>
 .navigation-component {
   position: fixed;
+  top:0;
   margin-bottom: 3em;
   width: 100%;
   z-index: 1;
