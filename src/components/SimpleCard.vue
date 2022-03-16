@@ -1,7 +1,5 @@
 <template>
-  <router-link
-    :to="{ name: 'Watch', params: { kpid: Number(kpid) } }"
-  >
+  <router-link :to="{ name: 'Watch', params: { kpid: Number(kpid) } }">
     <div
       :class="'film ratio ratio-16x9 ' + cardTypeClass"
       :style="`background-image: url(${bgURL})`"
@@ -9,13 +7,13 @@
       <div class="film__info info">
         <div class="info__text">
           <b
-            ><span>{{ ratingAgeLimits }}+</span></b
+            ><span v-if="ratingAgeLimits">{{ ratingAgeLimits }}+</span></b
           >
           <h2>
-            <span>{{ header }}</span>
+            <span v-if="header">{{ header }}</span>
           </h2>
           <p>
-            <span>{{ text }}</span>
+            <span v-if="text">{{ text }}</span>
           </p>
           <p>
             <slot name="time"></slot>
@@ -33,12 +31,12 @@
 export default {
   name: "SimpleCard",
   props: {
-    header: String,
-    text: String,
-    bgURL: String,
-    type: String,
-    ratingAgeLimits: String,
-    kpid: String,
+    header: { type: String, required: true, default: "" },
+    text: { type: String, required: false, default: "" },
+    bgURL: { type: String, required: false },
+    type: { type: String, required: false },
+    ratingAgeLimits: { type: String, required: false },
+    kpid: { type: String, required: true },
   },
   computed: {
     cardTypeClass() {
@@ -62,6 +60,7 @@ export default {
   background-color: rgb(141, 141, 141);
   border-radius: 0.5em;
   cursor: pointer;
+  transition: 2s all;
 }
 .film_default {
   width: 100%;
@@ -72,8 +71,7 @@ export default {
   background-size: cover;
   background-position: center;
   position: relative;
-  width: 100%;
-  min-width: 30em;
+  width: 30em;
   margin: 0.2em;
 }
 .film__info {
@@ -103,7 +101,13 @@ export default {
   font-size: 1.5rem;
   padding: 1rem;
 }
-
+.film_little .info__text {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.25rem;
+  padding: 0rem;
+}
 @media screen and (max-width: 425px) {
   .film_default {
     width: 100%;
@@ -119,7 +123,7 @@ export default {
     background-size: cover;
     background-position: center;
     position: relative;
-    width: 15em;
+    width: 20em;
   }
 }
 @media screen and (min-width: 425px) and (max-width: 900px) {
@@ -127,7 +131,7 @@ export default {
     background-size: cover;
     background-position: center;
     position: relative;
-    width: 15em;
+    width: 25em;
   }
 }
 </style>

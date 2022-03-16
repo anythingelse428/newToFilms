@@ -523,3 +523,26 @@ function deleteHistoryItem(int $kpid, string $jwt)
   dbAddOne($query, $var);
   return ['status' => 'ok'];
 }
+function showHistoryToggle(int $show, string $jwt)
+{
+  $user = UserJwtDecode($jwt)['data'];
+  $var = [
+    ':uid' => $user['uid'],
+    ':show' => $show
+  ];
+  $query = "INSERT INTO `Config` (`id`, `uid`, `showHistory`) VALUES (NULL, :uid, :show )";
+  dbAddOne($query, $var);
+  echo $show;
+  return ['status' => 'ok'];
+}
+function isHistoryShow(string $jwt)
+{
+  $user = UserJwtDecode($jwt)['data'];
+  $var = [
+    ':uid' => $user['uid'],
+  ];
+  $query = "SELECT `showHistory` FROM `Config` WHERE uid = :uid";
+  $showHistoryConf = dbGetAll($query, $var);
+  if (count($showHistoryConf) > 0) return $showHistoryConf;
+  else return $showHistoryConf = [['showHistory' => 1]];
+}

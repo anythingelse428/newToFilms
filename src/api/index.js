@@ -19,7 +19,22 @@ const Api = {
     getInfoKpid: async (id) => {
         return await axios.get('https://iny.su/api/method/watch.getDataByKpid?v=1.0&kpid=' + id + '&jwt=' + serviceJWT)
     },
-    getTrailer: async(id) => {
+    getInfoGenre: async (genre) => {
+        if (genre) {
+            return await axios.get('https://iny.su/api/method/watch.searchByFilters?v=1.0&genre= ' + genre + '&order=RATING&type=ALL&page=1')
+        }
+        else {
+            return await axios.get('https://iny.su/api/method/watch.searchByFilters?v=1.0&order=RATING&type=ALL&page=1')
+
+        }
+    },
+    showHistoryToggle: async (show) => {
+        return await axios.get('https://anythingelse.iny.su/api/method/user.showHistoryToggle?v=1.0&show=' + show + '&jwt=' + jwt + '&client_id=' + client_id)
+    },
+    isHistoryShow: async () => {
+        return await axios.get('https://anythingelse.iny.su/api/method/user.isHistoryShow?v=1.0&jwt=' + jwt + '&client_id=' + client_id)
+    },
+    getTrailer: async (id) => {
         return await axios.get('https://iny.su/api/method/watch.getTrailerData?v=1.0&kpid=' + id)
     },
     search: async (query) => {
@@ -35,11 +50,12 @@ const Api = {
         return await axios.get('https://anythingelse.iny.su/api/method/user.addHistory?v=1.0&kpid=' + kpid + '&jwt=' + jwt + '&client_id=' + client_id)
     },
     getUserHistory: async () => {
-        return await axios.get('https://anythingelse.iny.su/api/method/user.getHistory?v=1.0&jwt=' + jwt + '&client_id=' + client_id)
+        if (jwt != 'LOGOUT') {
+            return await axios.get('https://anythingelse.iny.su/api/method/user.getHistory?v=1.0&jwt=' + jwt + '&client_id=' + client_id)
+        }
     },
     deleteHistoryItem: async (kpid) => {
         return await axios.get('https://anythingelse.iny.su/api/method/user.deleteHistoryItem?v=1.0&jwt=' + jwt + '&client_id=' + client_id + '&kpid=' + kpid)
-
     }
 
 

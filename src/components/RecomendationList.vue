@@ -1,25 +1,46 @@
 <template>
-  <div class="recomendation" v-if="recomendation">
-    <div class="recomendation__cards" v-if="recomendation.length > 0">
-      <simple-card
-        :header="reki.nameRu"
-        :text="reki.year"
-        :bgURL="reki.posterUrl"
-        :key="reki.kinopoiskId"
-        :kpid="reki.kinopoiskId"
-        :ratingAgeLimits="reki.ratingAgeLimits"
-        type="default"
-        v-for="reki in recomendation"
-      >
-      </simple-card>
+  <div class="recomendation">
+    <div class="" v-for="colections in recomendation" :key="colections">
+      <div class="recomendation__block" v-if="recomendation.length > 0">
+        <h2 class="recomendation__title">
+          {{ colections.collection_title }}
+        </h2>
+        <div class="recomendation__line">
+          <button
+            @click="scroll('left', `.line--${colections.collection_id}`)"
+            class="button recomendation__button bi bi-caret-left"
+          ></button>
+          <div
+            class="line recomendation__line"
+            :class="`line--${colections.collection_id}`"
+          >
+            <div
+              class="line__items"
+              v-for="film in colections.items"
+              :key="film"
+            >
+              <simple-card
+                :header="film.nameRu"
+                :bgURL="film.posterUrl"
+                :kpid="String(film.kinopoiskId)"
+                type="little"
+              ></simple-card>
+            </div>
+          </div>
+          <button
+            @click="scroll('right', `.line--${colections.collection_id}`)"
+            class="button recomendation__button bi bi-caret-right"
+          ></button>
+        </div>
+      </div>
+      <span class="recomendation__placeholder" v-else> нема рекав </span>
     </div>
-    <span class="recomendation__placeholder" v-else> нема рекав </span>
   </div>
 </template>
 
 <script>
-import Api from "../api";
 import SimpleCard from "./SimpleCard.vue";
+import categories from "../store/categories";
 
 export default {
   components: {
@@ -30,28 +51,76 @@ export default {
       recomendation: [],
     };
   },
-  methods: {},
+  methods: {
+    scroll(vector, selector) {
+      let width = document.querySelector(".film__info").clientWidth * 1.02;
+      let box = document.querySelector(selector);
+      if (vector == "left") box.scrollLeft -= width;
+      if (vector == "right") box.scrollLeft += width;
+      console.log(box.scrollLeft);
+    },
+  },
   mounted() {
-    Api.getRecomendationList().then(({ data }) => {
-      this.recomendation = data.content;
-    });
+    this.recomendation = categories;
   },
 };
 </script>
 
 <style scoped>
-  .recomendation {
-    margin: 0 auto;
-    padding: 1em;
-    width: 90%;
-  }
-.recomendation__cards {
-  display: grid;
-  grid-column-gap: 0.5em;
-  grid-row-gap: 0.5em;
+.recomendation {
+  margin: 5em auto;
+  padding: 1em;
+  width: 90%;
+}
+.recomendation__block {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  margin-top: 5em;
+  align-items: center;
+  justify-content: center;
+}
+.recomendation__title {
   width: 100%;
-  grid-template-rows: repeat(1fr, 7%);
-  grid-template-columns: repeat(3, 1fr);
+}
+.recomendation__line,
+.line {
+  touch-action: manipulation;
+  display: flex;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+  overflow-x: visible;
+  overflow-y: hidden;
+  width: 90%;
+}
+.line__items {
+  overflow: visible;
+  transition: all 0.82s;
+}
+.line__items:hover {
+  position: relative;
+  z-index: 6;
+  transform: scale(1.12);
+}
+.button {
+  color: #fdfdff;
+  overflow: visible;
+  border: none;
+  font-size: 4em;
+  background: inherit;
+  transition: all 0.2s;
+}
+.button:hover {
+  color: #aaaaaa;
+}
+.line::-webkit-scrollbar {
+  width: 20px;
+}
+.line::-webkit-scrollbar-thumb {
+  border-radius: 100px;
+  border: 5px solid transparent;
+  background-clip: content-box;
+  background-color: #fafafab8;
 }
 .recomendation__goUp {
   position: fixed;
@@ -64,34 +133,9 @@ export default {
   color: rgb(0, 0, 0);
 }
 
-@media screen and (min-width: 670px) and (max-width: 1020px) {
-  .recomendation {
-    margin: 0 auto;
-    padding: 1em;
-    width: 90%;
-  }
-  .recomendation__cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-column-gap: 0.5em;
-    grid-row-gap: 0.5em;
-    width: 100%;
-  }
-  .recomendation__placeholder {
-    font-size: 1.5rem;
-    margin: 0 auto;
-    align-items: center;
-  }
-}
-@media screen  and (max-width: 670px) {
-  .recomendation {
-    margin: 0 auto;
-    padding: 1em;
-    width: 80%;
-  }
-  .recomendation__cards{
-    display: flex;
-    flex-direction: column;
+@media screen and (max-width: 600px) {
+  .button {
+    font-size: 1em;
   }
 }
 </style>

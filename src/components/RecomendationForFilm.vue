@@ -1,10 +1,10 @@
 <template>
-  <div class="recomendationForFilm" v-if="infoArr.length>0">
+  <div class="recomendationForFilm" v-if="infoArr.length > 0">
     <h2 class="recomendationForFilm__header">Рекомендации</h2>
     <div class="recomendationForFilm__wrapper">
       <button
         class="button recomendationForFilm__button bi bi-caret-left"
-        v-if="infoArr.length>1"
+        v-if="infoArr.length > 1"
         @click="scrollList('left')"
       ></button>
       <div class="recomendationForFilm__list">
@@ -21,7 +21,7 @@
       </div>
       <button
         class="button recomendationForFilm__button bi bi-caret-right"
-        v-if="infoArr.length>1"
+        v-if="infoArr.length > 1"
         @click="scrollList('right')"
       ></button>
     </div>
@@ -79,7 +79,7 @@ export default {
   width: 80%;
   display: flex;
   margin: 0 auto;
-  overflow: auto;
+  overflow: hidden;
 }
 .recomendationForFilm__button {
   overflow: visible;
@@ -94,8 +94,8 @@ export default {
   flex-wrap: nowrap;
   scroll-behavior: smooth;
   overflow-x: visible;
-  overflow-y: auto;
-  min-width: 31em;
+  overflow-y: hidden;
+  min-width: 10em;
 }
 .recomendationForFilm__list::-webkit-scrollbar {
   width: 20px;
@@ -105,5 +105,13 @@ export default {
   border: 6px solid transparent;
   background-clip: content-box;
   background-color: #ffffffb8;
+}
+@media screen and (max-width: 720px) {
+  .recomendationForFilm__wrapper {
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    overflow: hidden;
+  }
 }
 </style>

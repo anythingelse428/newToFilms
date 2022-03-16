@@ -7,11 +7,15 @@
 
 <script>
 import RecomendationList from "../components/RecomendationList.vue";
-import History from "../components/History.vue"
+import History from "../components/History.vue";
 
 export default {
   components: {
-    RecomendationList, History
+    RecomendationList,
+    History,
   },
 };
 </script>
+
+<style scoped>
+</style>

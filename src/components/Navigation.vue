@@ -42,7 +42,7 @@
           v-if="!IS_AUTH"
           @click="actAuth()"
           ><router-link to="/auth" class="navigation__link">
-            Войти
+           <i class="bi bi-box-arrow-right"></i>
           </router-link>
         </span>
         <search-result
@@ -61,11 +61,18 @@
       </button>
     </nav>
     <transition name="fade">
-      <div class="mobileBar navigation__tools-mobile" v-if="ddshow && mobile">
+      <div
+        class="mobileBar navigation__tools-mobile"
+        v-if="ddshow && mobile"
+        @click="ddshow = false"
+      >
         <div class="mobileBar__tools">
           <i class="bi bi-x-lg" @click="ddshow = !ddshow"></i>
           <div v-if="IS_AUTH" class="navigation__tools-auth">
-            <router-link to="/profile" class="navigation__link"
+            <router-link
+              @click="ddshow = false"
+              to="/profile"
+              class="navigation__link"
               ><i class="bi bi-person"></i
             ></router-link>
             <router-link
@@ -78,14 +85,14 @@
           <span
             class="navigation__tools-nonauth"
             v-if="!IS_AUTH"
-            @click="actAuth()"
+            @click="actAuth(), (ddshow = false)"
             ><router-link to="/auth" class="navigation__link">
-              Войти
+             <i class="bi bi-box-arrow-right"></i>
             </router-link>
           </span>
         </div>
 
-        <div class="mobileBar__searchGroup">
+        <div class="mobileBar__searchGroup" @click.stop="ddshow = true">
           <input
             v-if="searchShow || ddshow"
             class="search__input"
@@ -160,7 +167,7 @@ export default {
       }
       if (act == "LOGOUT") {
         Api.logout(this);
-        this.$router.push("/");
+        window.location = "/";
       }
     },
 
@@ -225,20 +232,23 @@ export default {
 <style scoped>
 .navigation-component {
   position: fixed;
-  top:0;
-  margin-bottom: 3em;
+  top: 0;
   width: 100%;
-  z-index: 1;
+  z-index: 7;
 }
 .navigation {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: rgb(27, 27, 27);
-  font-size: 1.5em;
+  font-size: 1.75em;
   padding: 0.55em;
+  height: 3.5em;
   width: 100%;
   position: sticky;
+}
+.mobileBar__searchGroup {
+  z-index: 5;
 }
 .navigation__link {
   color: #ebebeb;

@@ -1,20 +1,31 @@
 <template >
-  <div @click="inputSearch = ''">
+  <main>
     <Navigation />
-    <main>
-      <router-view />
-    </main>
+    <router-view />
     <Footer />
-  </div>
+  </main>
 </template>
 
 <script>
 import Footer from "./components/Footer.vue";
 import Navigation from "./components/Navigation.vue";
+import { mapActions } from "vuex";
 export default {
   components: {
     Footer,
     Navigation,
+  },
+  methods: {
+    ...mapActions({ load: "loadHistory" }),
+  },
+  created() {
+    this.load(1);
+  },
+  mounted() {
+
+    window.addEventListener("load", () => {
+      this.load(1);
+    });
   },
 };
 </script>
@@ -30,6 +41,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  color: #dddddd;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -37,5 +49,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
-
+main {
+  background: #2a2929;
+  min-height: 100vh;
+  padding-top: 6em;
+}
 </style>

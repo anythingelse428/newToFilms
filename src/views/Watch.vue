@@ -1,9 +1,7 @@
 <template>
   <div class="watch">
     <div class="watch__primary">
-      <div
-        class="watch__videoWrapper ratio ratio-16x9"
-      >
+      <div class="watch__videoWrapper ratio ratio-16x9">
         <iframe
           v-if="!hide"
           :src="GET_SRC"
@@ -70,6 +68,7 @@ export default {
       player: "Bazon",
       src: "",
       hide: true,
+      logHistory: false,
       //if activeButtonClass is false button for call Bazon player is active, for this reason it have .choosePlayer__button-active class by default
       activeButtonClass: false,
     };
@@ -114,8 +113,19 @@ export default {
       return this.getSrc();
     },
   },
-  created(){
-    this.addHistory(this.watchKpid)
+  created() {
+    Api.isHistoryShow().then((res) => {
+      let idx = res.data.length < 2 ? 0 : res.data.length - 1;
+      if (res.data[idx].showHistory == 1) {
+        console.log("HISTORY LOGGED");
+        this.addHistory(this.watchKpid);
+        return (this.logHistory = true);
+      } else {
+        console.log("HISTORY LOG DISALLOW");
+        return (this.logHistory = false);
+      }
+    });
+
   },
   mounted() {
     this.getSrc();
@@ -174,15 +184,13 @@ export default {
   color: inherit;
   transform: scaleX(10);
 }
-
-iframe {
-  background-color: rgb(141, 141, 141);
-}
 .watch {
   display: flow-root;
   width: 100%;
-  background: #0a0a0a;
-  padding-bottom: 5em;
+  padding: 2.5em 0.5em;
+}
+iframe {
+  background-color: #444444;
 }
 .watch__video-bad {
   background-size: cover !important;

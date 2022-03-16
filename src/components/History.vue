@@ -1,5 +1,5 @@
 <template>
-  <div class="history" v-if="filmData.length > 0">
+  <div class="history" v-if="filmData.length > 0 && showHistory">
     <h2 class="history__header">Вернуться к просмотру</h2>
     <div class="history__wrapper">
       <button
@@ -50,6 +50,7 @@ export default {
       userHistoryTime: [],
       filmData: [],
       tempData: [],
+      showHistory: false,
     };
   },
   methods: {
@@ -63,6 +64,10 @@ export default {
       Api.getUserHistory()
         .then(({ data }) => {
           this.tempData = data;
+        })
+        .catch((err) => {
+          this.filmData = [];
+          console.log(err);
         })
         .finally(() => this.getHistory());
     },
@@ -119,11 +124,20 @@ export default {
     },
     deleteHistoryItem(kpid) {
       Api.deleteHistoryItem(kpid);
-      this.initHistory();
+      location.reload();
     },
   },
   mounted() {
-    this.initHistory();
+    Api.isHistoryShow().then((res) => {
+      let idx = res.data.length < 2 ? 0 : res.data.length - 1;
+      if (res.data[idx].showHistory == 1) {
+        this.initHistory();
+        return (this.showHistory = true);
+      } else {
+        console.log("history hidden");
+        return (this.showHistory = false);
+      }
+    });
   },
 };
 </script>
@@ -134,7 +148,6 @@ export default {
   flex-direction: column;
   width: 90%;
   margin: 0 auto;
-  padding-top: 5em;
 }
 .history__header {
   width: 100%;
@@ -147,8 +160,8 @@ export default {
   overflow: auto;
 }
 .button {
+  color: #fdfdff;
   overflow: visible;
-  z-index: 5;
   border: none;
   font-size: 2em;
   background: inherit;
@@ -169,7 +182,7 @@ export default {
   border-radius: 100px;
   border: 5px solid transparent;
   background-clip: content-box;
-  background-color: #000000b8;
+  background-color: #fafafab8;
 }
 
 .history__card_delete {

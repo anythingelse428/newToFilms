@@ -2,7 +2,7 @@
   <div class="filmData">
     <div class="main filmData__main">
       <div class="title main__title">
-        <h2 >
+        <h2>
           <span>{{ infoArr.filmType + " " }}</span>
           <span>{{ infoArr.filmName }}</span> смотреть онлайн
         </h2>
@@ -73,7 +73,7 @@
         <p>
           {{ infoArr.filmYear }} {{ infoArr.filmTime }} {{ infoArr.filmAge }}+
         </p>
-        <div class="rating subinfo__rating" v-if="infoArr.filmRating>0">
+        <div class="rating subinfo__rating" v-if="infoArr.filmRating > 0">
           <b
             class="rating_border border"
             :style="`background:${infoArr.ratingColor}`"
@@ -208,10 +208,9 @@ export default {
 
 <style scoped>
 .filmData {
-  background: #0a0a0a;
-  color: white;
+  color: #e7e7e7;
   width: 90%;
-  height: calc(100%);
+  height: 100%;
   padding-left: 2.5em;
   margin-top: 1.5em;
 }
@@ -298,7 +297,6 @@ export default {
 
 @media screen and (max-width: 770px) {
   .filmData {
-    background: #0a0a0a;
     color: white;
     width: 90%;
     padding-left: 1.5em;

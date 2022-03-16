@@ -19,6 +19,12 @@ const routes = [
 
   },
   {
+    path: '/colletions/:genre',
+    name: 'Categories',
+        component: () => import(/* webpackChunkName: "Categories" */ '../components/Categories.vue'),
+
+  },
+  {
     path: '/auth',
     name: 'Auth',
         component: () => import(/* webpackChunkName: "Auth" */ '../views/Auth.vue'),

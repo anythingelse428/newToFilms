@@ -175,6 +175,50 @@ $methods = [
       'client_id' => [
         'required' => true,
         'type' => 'String'
+      ],
+      'kpid' => [
+        'required' => true,
+        'type' => 'Int'
+      ]
+    ]
+  ],
+  'user.isHistoryShow' => [
+    'in_active' => true,
+    'beforeMethods' => ['User.online'],
+    'objects' => ['User', 'Device'],
+    'title' => 'User history info',
+    'detail' => 'User default info',
+    'link' => '/user.getHistory',
+    'props' => [
+      'jwt' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'client_id' => [
+        'required' => true,
+        'type' => 'String'
+      ]
+    ]
+  ],
+  'user.showHistoryToggle' => [
+    'in_active' => true,
+    'beforeMethods' => ['User.online'],
+    'objects' => ['User', 'Device'],
+    'title' => 'User history info',
+    'detail' => 'User default info',
+    'link' => '/user.getHistory',
+    'props' => [
+      'jwt' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'client_id' => [
+        'required' => true,
+        'type' => 'String'
+      ],
+      'show' => [
+        'required' => true,
+        'type' => 'Int'
       ]
     ]
   ],
