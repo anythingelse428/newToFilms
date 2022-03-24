@@ -243,7 +243,7 @@ export default {
   background-color: rgb(27, 27, 27);
   font-size: 1.75em;
   padding: 0.55em;
-  height: 3.5em;
+  height: 3em;
   width: 100%;
   position: sticky;
 }

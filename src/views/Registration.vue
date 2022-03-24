@@ -6,22 +6,26 @@
         <span>{{ valid.message }}</span>
       </div>
     </transition>
-    <form class="container-sm registration__form">
+    <form class="form registration__form container-sm">
       <input
         type="text"
         placeholder="Имя"
         v-model="name"
-        class="input"
-        :class="valid.name"
+        class="form__input"
+        :class="valid.name + ' form__input'"
       />
       <input
         type="text"
         placeholder="Фамилия"
         v-model="sname"
-        class="input"
-        :class="valid.sname"
+        :class="valid.sname + ' form__input'"
       />
-      <select name="gender" id="" v-model="gender" :class="valid.gender">
+      <select
+        name="gender"
+        id=""
+        v-model="gender"
+        :class="valid.gender + ' form__select'"
+      >
         <option disabled="disabled" value="">Гендер</option>
         <option value="male">Мужской</option>
         <option value="female">Женский</option>
@@ -31,20 +35,32 @@
         type="email"
         placeholder="E-mail"
         v-model="email"
-        :class="valid.email"
+        :class="valid.email + ' form__input'"
       />
-      <input
-        :type="inputTypePassword"
-        placeholder="Пароль"
-        v-model="password"
-        :class="valid.password"
-      />
-      <input
-        :type="inputTypePassword"
-        placeholder="Подтвердите пароль"
-        v-model="confirmPassword"
-        :class="valid.confirmPassword"
-      />
+      <div class="form__inputWrapper">
+        <input
+          :type="inputType"
+          placeholder="Пароль"
+          v-model="password"
+          :class="valid.password + ' form__input'"
+        />
+        <label class="show__password" @click.prevent="changeInputType()">
+          <i class="bi bi-eye-slash" v-show="inputType == 'password'"></i>
+          <i class="bi bi-eye" v-show="inputType == 'text'"></i>
+        </label>
+      </div>
+      <div class="form__inputWrapper">
+        <input
+          :type="inputType"
+          placeholder="Подтвердите пароль"
+          v-model="confirmPassword"
+          :class="valid.confirmPassword + ' form__input'"
+        />
+        <label class="show__password" @click.prevent="changeInputType()">
+          <i class="bi bi-eye-slash" v-show="inputType == 'password'"></i>
+          <i class="bi bi-eye" v-show="inputType == 'text'"></i>
+        </label>
+      </div>
       <button @click.prevent="register()">Регистрация</button>
     </form>
   </div>
@@ -61,7 +77,7 @@ export default {
       email: "",
       password: "",
       confirmPassword: "",
-      inputTypePassword: "text",
+      inputType: "password",
       badData: false,
       valid: {
         name: "good",
@@ -75,9 +91,12 @@ export default {
     };
   },
   methods: {
+    changeInputType() {
+      if (this.inputType === "password") {
+        return (this.inputType = "text");
+      } else return (this.inputType = "password");
+    },
     register() {
-      this.validate();
-
       Api.register(
         this,
         this.name,
@@ -85,108 +104,46 @@ export default {
         this.email,
         this.gender,
         this.password
-      ).then((data) => {
-        if (data?.jwt) {
-          this.$store.commit("LOGIN", data?.jwt);
-          return this.$router.push("/profile");
-        } else {
-
-          switch (data.data.error) {
-            case "enter your real name":
-              this.valid.message = "Введите свое настоящее имя";
-              this.valid.name = "warn";
-              this.badData = true;
-              setTimeout(() => {
-                this.valid.name = "good";
-                this.badData = false;
-              }, 3500);
-              break;
-            case "enter your real surname":
-              this.valid.message = "Введите свою настоящую фамилию";
-              this.valid.sname = "warn";
-              this.badData = true;
-              setTimeout(() => {
-                this.valid.sname = "good";
-                this.badData = false;
-              }, 2500);
-              break;
-            case "the specified email address is not valid":
-              this.valid.message = "Введите правильный email адрес";
-              this.valid.email = "warn";
-              this.badData = true;
-              setTimeout(() => {
-                this.valid.email = "good";
-                this.badData = false;
-              }, 2500);
-              break;
-            case "this email already has an account":
-              this.valid.message = "Этот email уже занят";
-              this.valid.email = "warn";
-              this.badData = true;
-              setTimeout(() => {
-                this.valid.email = "good";
-                this.badData = false;
-              }, 2500);
-              break;
-            case "enter a password that exceeds 7 characters":
-              this.valid.message = "Пароль должен содеражать более 7 символов";
-              this.valid.password = "warn";
-              this.badData = true;
-              setTimeout(() => {
-                this.valid.password = "good";
-                this.badData = false;
-              }, 2500);
-              break;
+      )
+        .then((data) => {
+          if (data?.jwt) {
+            this.$store.commit("LOGIN", data?.jwt);
+            return this.$router.push("/profile");
+          } else {
+            switch (data.data.error) {
+              case "enter your real name":
+                this.showMessage("name", "Введите свое настоящее имя");
+                break;
+              case "enter your real surname":
+                this.showMessage("sname", "Введите свою настоящую фамилию");
+                break;
+              case "the specified email address is not valid":
+                this.showMessage("email", "Введите правильный email адрес");
+                break;
+              case "this email already has an account":
+                this.showMessage("email", "Этот email уже занят");
+                break;
+              case "enter a password that exceeds 7 characters":
+                this.showMessage(
+                  "password",
+                  "Пароль должен содеражать более 7 символов"
+                );
+                break;
+            }
           }
-        }
-      });
+        })
+        .catch(() => {
+          this.showMessage("", "Проверьте правильность введеных данных");
+        });
     },
-    validate() {
-      if (this.name.length === 0) {
-        this.valid.name = "warn";
-        setTimeout(() => {
-          this.valid.name = "good";
-        }, 3000);
-        return
-      }
-      if (this.sname.length == 0) {
-        this.valid.sname = "warn";
-        setTimeout(() => {
-          this.valid.sname = "good";
-        }, 3000);
-        return
-      }
-      if (this.email.length == 0) {
-        this.valid.email = "warn";
-        setTimeout(() => {
-          this.valid.email = "good";
-        }, 3000);
-        return
-      }
-      if (this.gender.length == 0) {
-        this.valid.gender = "invalidGender";
-        setTimeout(() => {
-          this.valid.gender = "good";
-        }, 3000);
-        return
-      }
-      if (this.password.length < 4) {
-        this.valid.password = "warn";
-        setTimeout(() => {
-          this.valid.password = "good";
-        }, 3000);
-        return
-      }
-      if (this.password != this.confirmPassword) {
-        this.valid.message = "Пароли не совпадают";
-        this.badData = true;
-        this.valid.confirmPassword = "warn";
-        setTimeout(() => {
-          this.valid.confirmPassword = "good";
-          this.badData = false;
-        }, 3000);
-        return
-      }
+    showMessage(errItem, message) {
+      this.valid[errItem] = "warn";
+      this.badData = true;
+      this.valid.message = message;
+      setTimeout(() => {
+        this.valid[errItem] = "good";
+        this.badData = false;
+      }, 2500);
     },
   },
 };
@@ -234,14 +191,29 @@ export default {
 .warn {
   border-bottom: 2px solid #ff5454a8 !important;
 }
-.invalidGender {
-  background: #ff54549c;
-}
-option:disabled {
-  color: -internal-light-dark(gray, rgb(170, 170, 170));
-}
 .registration {
-  height: 90vh;
+  height: 95vh;
+  padding: 2em 0;
+  font-size: 1.1em;
+}
+.form__inputWrapper {
+  position: relative;
+  width: 100%;
+}
+.form__inputWrapper .form__input {
+  width: 100%;
+  outline: none;
+  border-radius: 5px;
+}
+.form__inputWrapper label {
+  position: absolute;
+  right: 0.9em;
+  top: calc(100% - 66%);
+  cursor: pointer;
+}
+.form__inputWrapper label > i {
+  color: initial;
+  font-size: initial;
 }
 @media screen and (min-width: 666px) {
   .registration__form {
@@ -255,18 +227,21 @@ option:disabled {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  color: #e2e2e2;
 }
-.registration__form input,
-select {
-  font-size: 1.1em;
+.form__input {
   margin: 1em 0;
   border: none;
+  border-radius: 0.2em;
   outline: none;
   border-bottom: 2px solid #464646a8;
   transition: all ease-in-out 0.2s;
+  background: transparent;
 }
-input:focus-visible {
-  background: #98ef9fb3;
+
+.form__input:focus-visible,
+.form__input:focus {
+  background: #98ef9fe1;
   padding: 0.5em;
   border-radius: 5px;
   color: black;
@@ -274,11 +249,14 @@ input:focus-visible {
 .good {
   border-bottom: 2px solid #464646a8;
 }
-select {
+.form__select {
   -webkit-appearance: menulist;
-  padding: 10px 40px 10px 10px;
+  padding: 10px 40px 10px 1px;
   width: 100%;
-  border: 1px solid #464646a8;
+  border: 0;
+  border-bottom: 2px solid #464646a8;
+  margin: 1em 0;
+  color: #8f8f8f;
   border-radius: 5px;
   background: transparent;
   cursor: pointer;
@@ -286,12 +264,12 @@ select {
 
 option {
   background: transparent;
+  color: initial;
 }
 button {
   border: 0;
   border-radius: 0.2em;
   background: rgb(139, 240, 172);
-  color: #504e4e;
   font-family: system-ui;
   width: 8em;
   text-align: center;

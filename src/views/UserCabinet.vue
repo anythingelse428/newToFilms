@@ -3,7 +3,7 @@
     <h1>{{ USER.name }},кабинет еще не готов :(</h1>
     <div class="userCabinet__tools">
       <hr />
-      <h2>Эксперементальные настройки</h2>
+      <pre>Эксперементальные настройки</pre>
       <div class="tool">
         <label for="tool1">
           <h2>Записывать и отображать историю</h2>
@@ -64,6 +64,10 @@ export default {
 </script>
 
 <style scoped>
+pre{
+  font-family: monospace;
+  font-size: 1.2em;
+}
 .userCabinet {
   height: 90vh;
   margin-top: 5em;

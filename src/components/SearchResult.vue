@@ -2,7 +2,7 @@
   <!-- This component only works for an array with my structure, because I use kinopoiskId as key -->
   <div class="searchResult" v-if="input">
     <ul class="searchResult__found found">
-      <li v-if="(array.length == 0) & (input.length > 3)">ничего нет(</li>
+      <li v-if="(array.length == 0) && (input.length > 3)">ничего нет(</li>
       <div v-for="item in array" :key="item.kinopoiskId">
         <router-link
           :to="{ name: 'Watch', params: { kpid: Number(item.kinopoiskId) } }"

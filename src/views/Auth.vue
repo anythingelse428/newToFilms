@@ -18,7 +18,9 @@
         class="input form__input"
       />
 
-      <button class="button form__button" @click="login(), loginValidate()">Войти</button>
+      <button class="button form__button" @click="login(), loginValidate()">
+        Войти
+      </button>
     </div>
     <sub
       >Ещё нет аккаунта?
@@ -74,8 +76,9 @@ export default {
 </script>
 
 <style scoped>
-.auth{
-  height: 90vh;
+.auth {
+  height: 95vh;
+  padding: 2em 0;
 }
 .auth__form {
   display: flex;

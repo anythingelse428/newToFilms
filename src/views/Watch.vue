@@ -14,6 +14,7 @@
           class="watch__video-bad"
         >
           <h2>Сайт создан исключительно с целью ознакомления</h2>
+          <h3 class="hidden">Авторизация легитимизирует пиратство </h3>
         </div>
       </div>
       <div class="watch__choosePlayer" v-if="!hide">
@@ -125,7 +126,6 @@ export default {
         return (this.logHistory = false);
       }
     });
-
   },
   mounted() {
     this.getSrc();
@@ -201,6 +201,11 @@ iframe {
   color: rgb(248, 248, 248);
   background: rgb(24, 24, 24);
   padding: 0.5em;
+}
+.hidden{
+  color: transparent;
+  background: transparent;
+
 }
 .watch__primary {
   display: block;
